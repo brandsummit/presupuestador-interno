@@ -31,9 +31,6 @@
 
   --color-success: var(--success);
   --color-danger: var(--danger);
-
-  --font-sans: var(--font-sans);
-  --font-display: var(--font-display);
 }
 
 * {
