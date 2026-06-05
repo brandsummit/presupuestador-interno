@@ -1,0 +1,58 @@
+export type Client = {
+  id: number;
+  name: string | null;
+};
+
+export type QuoteItem = {
+  id: number;
+  position?: number | null;
+  title?: string | null;
+  description?: string | null;
+  price?: number | null;
+};
+
+export type QuoteSection = {
+  id: number;
+  position?: number | null;
+  title?: string | null;
+  quote_items?: QuoteItem[];
+};
+
+export type Quote = {
+  id: number;
+
+  number: string | null;
+  title: string | null;
+  description: string | null;
+
+  status: string | null;
+
+  token: string | null;
+
+  created_at: string | null;
+  sent_at: string | null;
+
+  objective: string | null;
+  current_phase: string | null;
+
+  start_at: string | null;
+  duration: string | null;
+  payment_terms: string | null;
+  next_steps: string | null;
+
+  client_id: number | null;
+
+  clients?: {
+    id: number;
+    name: string | null;
+  } | null;
+
+  quote_sections?: QuoteSection[];
+
+  show_objective?: boolean | null;
+  show_phases?: boolean | null;
+  show_process?: boolean | null;
+  show_costs?: boolean | null;
+  show_timeline?: boolean | null;
+  show_summary?: boolean | null;
+};
