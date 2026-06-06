@@ -5,6 +5,7 @@ import { updateQuoteField } from "@/app/(admin)/quote/[id]/actions";
 import Input from "@/components/ui/Input";
 
 import { Quote } from "./types";
+import { ArrowLeft } from "lucide-react";
 
 type Props = {
   quote: Quote;
@@ -20,6 +21,15 @@ export default function QuoteEditorHeader({ quote }: Props) {
 
   return (
     <header>
+      <div className="flex items-center justify-between pb-6">
+        <div className="flex align-center gap-4">
+          <a href="/quotes" className="flex pt-1.5 hover:opacity-70">
+            <ArrowLeft size={24} />
+          </a>
+          <h1 className="text-2xl">Edit Quote</h1>
+        </div>
+      </div>
+      
       <div className="space-y-2">
         <Input
           variant="quoteNumber"

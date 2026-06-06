@@ -1,20 +1,23 @@
-import { Eye, Trash2 } from 'lucide-react'
+import { Eye, Trash2 } from "lucide-react";
+import { deleteClient } from "@/app/(admin)/client/client-actions";
 
 type ClientCardProps = {
   client: {
-    id: number
-    name: string | null
-    company: string | null
-    email: string | null
-    phone: string | null
-  }
-}
+    id: number;
+    name: string | null;
+    company: string | null;
+    email: string | null;
+    phone: string | null;
+  };
+};
 
 export default function ClientCard({ client }: ClientCardProps) {
   return (
     <article className="grid grid-cols-[2fr_1.5fr_1.5fr_auto] items-center gap-4 rounded-lg bg-background-light py-5 pr-8 pl-5">
       <div>
-        <h3 className="text-3xl font-display font-bold leading-none">{client.name}</h3>
+        <h3 className="text-3xl font-display font-bold leading-none">
+          {client.name}
+        </h3>
         <p className="mt-2 text-md text-text">{client.company}</p>
       </div>
 
@@ -25,10 +28,15 @@ export default function ClientCard({ client }: ClientCardProps) {
       </a>
 
       <div className="flex gap-2">
-        <button className="flex items-center gap-2 rounded-lg border border-danger px-2 py-1 text-sm text-danger hover:bg-danger hover:text-background">
-          <Trash2 size={14} />
-          Trash
-        </button>
+        <form action={deleteClient.bind(null, String(client.id))}>
+          <button
+            type="submit"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-danger px-3 text-xs text-danger hover:bg-danger/10"
+          >
+            <Trash2 size={14} />
+            Delete
+          </button>
+        </form>
 
         <a
           href={`/client/${client.id}`}
@@ -39,5 +47,5 @@ export default function ClientCard({ client }: ClientCardProps) {
         </a>
       </div>
     </article>
-  )
+  );
 }

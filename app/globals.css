@@ -3,7 +3,7 @@
 :root {
   --background: #3b3b3b;
   --background-light: #414141;
-  --background-lighter: #595959;
+  --background-lighter: #4f4f4f;
 
   --surface: #4c4c4c;
 
@@ -31,6 +31,9 @@
 
   --color-success: var(--success);
   --color-danger: var(--danger);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
 * {

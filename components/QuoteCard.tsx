@@ -1,5 +1,10 @@
 import { Trash2, Eye, Copy, Pencil } from 'lucide-react'
 import Link from 'next/link'
+import {
+  cloneQuote,
+  deleteQuote,
+  rectifyQuote,
+} from "@/app/(admin)/quote/duplicate-actions";
 
 type QuoteStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'rejected'
 
@@ -90,21 +95,35 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
         </div>
 
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-input-border px-2 py-1 text-sm hover:border-text hover:bg-text hover:text-background-light"
-          >
-            <Copy size={14} />
-            Clone
-          </button>
+          <form action={cloneQuote.bind(null, String(quote.id))}>
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+            >
+              <Copy size={14} />
+              Clone
+            </button>
+          </form>
 
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-danger px-2 py-1 text-sm text-danger hover:bg-danger hover:text-background"
-          >
-            <Trash2 size={14} />
-            Trash
-          </button>
+          <form action={rectifyQuote.bind(null, String(quote.id))}>
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+            >
+              <Copy size={14} />
+              Rectify
+            </button>
+          </form>
+
+          <form action={deleteQuote.bind(null, String(quote.id))}>
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 rounded-lg bg-danger border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+            >
+              <Trash2 size={14} />
+              Delete
+            </button>
+          </form>
         </div>
       </div>
     </article>

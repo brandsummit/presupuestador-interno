@@ -152,7 +152,7 @@ export default async function QuotePage({ params }: QuotePageProps) {
         }}
       />
 
-      <QuoteToolbar token={typedQuote.token} />
+      <QuoteToolbar token={String(typedQuote.token)} quoteId={String(typedQuote.id)} />
     </div>
   );
 }
