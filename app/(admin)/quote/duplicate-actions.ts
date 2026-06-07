@@ -7,8 +7,12 @@ import { supabase } from "@/lib/supabase";
 type DbRecord = Record<string, unknown>;
 
 function cleanRecord(record: DbRecord) {
-  const { id, created_at, ...rest } = record;
-  return rest;
+  const copy = { ...record };
+
+  delete copy.id;
+  delete copy.created_at;
+
+  return copy;
 }
 
 async function getNextNumber() {
