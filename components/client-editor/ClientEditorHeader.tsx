@@ -12,6 +12,7 @@ type Props = {
 export default function ClientEditorHeader({ client }: Props) {
   return (
     <header>
+
       <div className="flex items-center justify-between pb-6">
         <div className="flex align-center gap-4">
           <a
@@ -32,6 +33,7 @@ export default function ClientEditorHeader({ client }: Props) {
           </button>
         </form>
       </div>
+      
       <div className="space-y-2">
         <input
           defaultValue={client.name || ""}

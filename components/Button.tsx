@@ -20,6 +20,9 @@ export default function Button({
 
     danger:
       'border border-danger text-danger hover:bg-danger hover:text-background',
+
+    noBorderDanger:
+      'text-danger hover:bg-danger hover:text-background',
   }
 
   return (

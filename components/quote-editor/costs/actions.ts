@@ -4,31 +4,36 @@ import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 
 export async function createQuoteCostCategory(quoteId: number) {
-  const { data: sections, error: sectionsError } = await supabase
+  const { data: lastSection } = await supabase
     .from("quote_sections")
     .select("position")
-    .eq("quote_id", quoteId);
+    .eq("quote_id", quoteId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (sectionsError) {
-    throw new Error(sectionsError.message);
-  }
+  const nextPosition = (lastSection?.position || 0) + 1;
 
-  const nextPosition =
-    sections?.length
-      ? Math.max(...sections.map((section) => section.position || 0)) + 1
-      : 1;
+  const { data: section, error } = await supabase
+    .from("quote_sections")
+    .insert({
+      quote_id: quoteId,
+      title: "New category",
+      position: nextPosition,
+    })
+    .select("*")
+    .single();
 
-  const { error } = await supabase.from("quote_sections").insert({
-    quote_id: quoteId,
-    title: "Nueva categoría",
-    position: nextPosition,
-  });
-
-  if (error) {
-    throw new Error(error.message);
+  if (error || !section) {
+    throw new Error(error?.message || "Category could not be created");
   }
 
   revalidatePath(`/quote/${quoteId}`);
+
+  return {
+    ...section,
+    quote_items: [],
+  };
 }
 
 export async function updateQuoteCostCategory(
@@ -66,37 +71,36 @@ export async function deleteQuoteCostCategory(
   revalidatePath(`/quote/${quoteId}`);
 }
 
-export async function createQuoteCostItem(
-  quoteId: number,
-  sectionId: number,
-) {
-  const { data: items, error: itemsError } = await supabase
+export async function createQuoteCostItem(quoteId: number, sectionId: number) {
+  const { data: lastItem } = await supabase
     .from("quote_items")
     .select("position")
-    .eq("section_id", sectionId);
+    .eq("section_id", sectionId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (itemsError) {
-    throw new Error(itemsError.message);
-  }
+  const nextPosition = (lastItem?.position || 0) + 1;
 
-  const nextPosition =
-    items?.length
-      ? Math.max(...items.map((item) => item.position || 0)) + 1
-      : 1;
+  const { data: item, error } = await supabase
+    .from("quote_items")
+    .insert({
+      section_id: sectionId,
+      title: "",
+      description: "",
+      price: 0,
+      position: nextPosition,
+    })
+    .select("*")
+    .single();
 
-  const { error } = await supabase.from("quote_items").insert({
-    section_id: sectionId,
-    title: "Nuevo item",
-    description: "",
-    price: 0,
-    position: nextPosition,
-  });
-
-  if (error) {
-    throw new Error(error.message);
+  if (error || !item) {
+    throw new Error(error?.message || "Item could not be created");
   }
 
   revalidatePath(`/quote/${quoteId}`);
+
+  return item;
 }
 
 export async function updateQuoteCostItem(
@@ -131,6 +135,44 @@ export async function deleteQuoteCostItem(
   if (error) {
     throw new Error(error.message);
   }
+
+  revalidatePath(`/quote/${quoteId}`);
+}
+
+export async function reorderQuoteCostCategories(
+  quoteId: number,
+  orderedSectionIds: number[],
+) {
+  for (let index = 0; index < orderedSectionIds.length; index++) {
+    const sectionId = orderedSectionIds[index];
+
+    const { error } = await supabase
+      .from("quote_sections")
+      .update({
+        position: index + 1,
+      })
+      .eq("id", sectionId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  revalidatePath(`/quote/${quoteId}`);
+}
+
+export async function reorderQuoteCostItems(
+  quoteId: number,
+  orderedItemIds: number[],
+) {
+  await Promise.all(
+    orderedItemIds.map((itemId, index) =>
+      supabase
+        .from("quote_items")
+        .update({ position: index + 1 })
+        .eq("id", itemId),
+    ),
+  );
 
   revalidatePath(`/quote/${quoteId}`);
 }

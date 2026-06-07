@@ -2,6 +2,7 @@
 
 :root {
   --background: #3b3b3b;
+  --background-dark: #353535;
   --background-light: #414141;
   --background-lighter: #4f4f4f;
 
@@ -19,6 +20,7 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-dark: var(--background-dark);
   --color-background-light: var(--background-light);
   --color-background-lighter: var(--background-lighter);
   --color-surface: var(--surface);
