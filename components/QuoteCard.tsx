@@ -5,6 +5,7 @@ import {
   deleteQuote,
   rectifyQuote,
 } from "@/app/(admin)/quote/duplicate-actions";
+import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
 
 type QuoteStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'rejected'
 
@@ -115,15 +116,7 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
             </button>
           </form>
 
-          <form action={deleteQuote.bind(null, String(quote.id))}>
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 rounded-lg bg-danger border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
-            >
-              <Trash2 size={14} />
-              Delete
-            </button>
-          </form>
+            <ConfirmDeleteButton action={deleteQuote.bind(null, String(quote.id))} />
         </div>
       </div>
     </article>

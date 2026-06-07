@@ -29,6 +29,8 @@ import {
   updateQuoteCostCategory,
 } from "./actions";
 
+import ConfirmIconDeleteButton from "@/components/ui/ConfirmIconDeleteButton";
+
 type Props = {
   quoteId: number;
   section: QuoteSection;
@@ -74,12 +76,6 @@ export default function CostCategoryCard({
   }
 
   async function handleDeleteCategory() {
-    const confirmed = window.confirm(
-      "¿Seguro que quieres borrar esta categoría? También se borrarán sus items.",
-    );
-
-    if (!confirmed) return;
-
     await deleteQuoteCostCategory(quoteId, section.id);
     onDeleted();
   }
@@ -201,15 +197,10 @@ export default function CostCategoryCard({
         </div>
       </div>
 
-      <Button
-        type="button"
-        variant="noBorderDanger"
+      <ConfirmIconDeleteButton
         disabled={!enabled}
-        onClick={handleDeleteCategory}
-        className="px-3"
-      >
-        <Trash2 size={16} />
-      </Button>
+        onConfirm={handleDeleteCategory}
+      />
     </article>
   );
 }

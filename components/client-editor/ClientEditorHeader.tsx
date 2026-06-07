@@ -3,7 +3,8 @@
 import { updateClientField } from "@/app/(admin)/client/[id]/actions";
 import { Client } from "./types";
 import { deleteClient } from "@/app/(admin)/client/client-actions";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
 
 type Props = {
   client: Client;
@@ -23,17 +24,9 @@ export default function ClientEditorHeader({ client }: Props) {
           </a>
           <h1 className="text-2xl">Edit Client</h1>
         </div>
-        <form action={deleteClient.bind(null, String(client.id))}>
-          <button
-            type="submit"
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-danger px-3 text-xs text-danger hover:bg-danger/10"
-          >
-            <Trash2 size={14} />
-            Delete
-          </button>
-        </form>
+        <ConfirmDeleteButton action={deleteClient.bind(null, String(client.id))} />
       </div>
-      
+
       <div className="space-y-2">
         <input
           defaultValue={client.name || ""}

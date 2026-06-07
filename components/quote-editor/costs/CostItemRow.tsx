@@ -10,6 +10,8 @@ import CostAutosizeTextarea from "@/components/ui/CostAutosizeTextarea";
 import { QuoteItem } from "../types";
 import { updateQuoteCostItem, deleteQuoteCostItem } from "./actions";
 
+import ConfirmIconDeleteButton from "@/components/ui/ConfirmIconDeleteButton";
+
 type Props = {
   quoteId: number;
   item: QuoteItem;
@@ -41,9 +43,6 @@ export default function CostItemRow({
   };
 
   async function handleDelete() {
-    const confirmed = window.confirm("¿Seguro que quieres borrar este item?");
-    if (!confirmed) return;
-
     await deleteQuoteCostItem(quoteId, item.id);
     onDeleted();
   }
@@ -104,15 +103,7 @@ export default function CostItemRow({
         }
       />
 
-      <Button
-        type="button"
-        variant="noBorderDanger"
-        disabled={!enabled}
-        onClick={handleDelete}
-        className="px-3"
-      >
-        <Trash2 size={16} />
-      </Button>
+      <ConfirmIconDeleteButton disabled={!enabled} onConfirm={handleDelete} />
     </div>
   );
 }

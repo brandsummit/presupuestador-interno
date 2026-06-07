@@ -1,4 +1,5 @@
-import { Eye, Trash2 } from "lucide-react";
+import { Eye } from "lucide-react";
+import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
 import { deleteClient } from "@/app/(admin)/client/client-actions";
 
 type ClientCardProps = {
@@ -28,15 +29,7 @@ export default function ClientCard({ client }: ClientCardProps) {
       </a>
 
       <div className="flex gap-2">
-        <form action={deleteClient.bind(null, String(client.id))}>
-          <button
-            type="submit"
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-danger px-3 text-xs text-danger hover:bg-danger/10"
-          >
-            <Trash2 size={14} />
-            Delete
-          </button>
-        </form>
+        <ConfirmDeleteButton action={deleteClient.bind(null, String(client.id))} />
 
         <a
           href={`/client/${client.id}`}

@@ -10,6 +10,8 @@ type Props = {
   quoteId: string;
 };
 
+import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
+
 export default function QuoteToolbar({ quoteId, token }: Props) {
   return (
     <div className="fixed bottom-0 mb-10 left-0 w-full z-50 pl-76 flex justify-center">
@@ -51,16 +53,9 @@ export default function QuoteToolbar({ quoteId, token }: Props) {
             </button>
           </form>
 
-          <form action={deleteQuote.bind(null, quoteId)}>
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 rounded-lg bg-danger border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
-            >
-              <Trash2 size={14} />
-              Delete
-            </button>
-          </form>
-          
+          <ConfirmDeleteButton
+            action={deleteQuote.bind(null, String(quoteId))}
+          />
         </div>
 
         <div className="flex items-center gap-1 rounded-xl h-11 p-1.5 bg-background-lighter">
