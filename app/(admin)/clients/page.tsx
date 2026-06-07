@@ -3,7 +3,16 @@ import SearchInput from "@/components/SearchInput";
 import ClientCard from "@/components/ClientCard";
 import NewClientButton from "@/components/NewClientButton";
 
-export default async function ClientsPage() {
+type Props = {
+  searchParams: Promise<{
+    q?: string;
+  }>;
+};
+
+export default async function ClientsPage({ searchParams }: Props) {
+  const { q = "" } = await searchParams;
+  const search = q.toLowerCase().trim();
+
   const { data: clients, error } = await supabase
     .from("clients")
     .select("*")
@@ -12,6 +21,20 @@ export default async function ClientsPage() {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
+  const filteredClients = clients?.filter((client) => {
+    if (!search) return true;
+
+    return [
+      client.name,
+      client.company,
+      client.email,
+      client.phone,
+      client.contact_name,
+    ]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(search));
+  });
 
   return (
     <>
@@ -24,7 +47,7 @@ export default async function ClientsPage() {
       <SearchInput placeholder="Search client..." />
 
       <div className="space-y-4">
-        {clients?.map((client) => (
+        {filteredClients?.map((client) => (
           <ClientCard key={client.id} client={client} />
         ))}
       </div>

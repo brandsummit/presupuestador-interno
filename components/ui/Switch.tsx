@@ -11,7 +11,7 @@ export default function Switch({ enabled, onToggle }: Props) {
       type="button"
       onClick={() => onToggle(!enabled)}
       className={`relative h-6 w-11 rounded-full transition cursor-pointer ${
-        enabled ? "bg-success" : "bg-border"
+        enabled ? "bg-success" : "bg-text-muted"
       }`}
     >
       <span

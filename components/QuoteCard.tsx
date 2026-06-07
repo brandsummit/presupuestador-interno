@@ -1,4 +1,4 @@
-import { Trash2, Eye, Copy, Pencil } from 'lucide-react'
+import { Eye, Copy, Pencil } from 'lucide-react'
 import Link from 'next/link'
 import {
   cloneQuote,
@@ -80,7 +80,7 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
         <div className="flex justify-end gap-2">
           <Link
             href={`/quote/${quote.id}`}
-            className="flex items-center justify-center gap-2 rounded-lg border border-input-border px-2 py-1 text-sm hover:border-text hover:bg-text hover:text-background-light"
+            className="flex items-center justify-center gap-2 rounded-lg border border-input-border h-8 px-3 text-xs hover:border-text hover:bg-text hover:text-background-light"
           >
             <Pencil size={14} />
             Edit
@@ -88,10 +88,10 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
 
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-success bg-success px-2 py-1 text-sm text-background hover:border-success hover:bg-background-light hover:text-success"
+            className="flex items-center justify-center gap-2 rounded-lg border border-success bg-success h-8 px-3 text-xs text-background hover:border-success hover:bg-background-light hover:text-success"
           >
             <Eye size={14} />
-            View / Send
+            View & send
           </button>
         </div>
 

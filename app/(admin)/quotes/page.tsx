@@ -3,7 +3,16 @@ import SearchInput from "@/components/SearchInput";
 import QuoteCard from "@/components/QuoteCard";
 import NewQuoteButton from "@/components/NewQuoteButton";
 
-export default async function QuotesPage() {
+type Props = {
+  searchParams: Promise<{
+    q?: string;
+  }>;
+};
+
+export default async function QuotesPage({ searchParams }: Props) {
+  const { q = "" } = await searchParams;
+  const search = q.toLowerCase().trim();
+
   const { data: quotes, error } = await supabase
     .from("quotes")
     .select(
@@ -18,6 +27,22 @@ export default async function QuotesPage() {
     return <div>Error: {error.message}</div>;
   }
 
+  const filteredQuotes = quotes?.filter((quote) => {
+    if (!search) return true;
+
+    return [
+      quote.number,
+      quote.title,
+      quote.description,
+      quote.status,
+      quote.clients?.name,
+      quote.clients?.company,
+      quote.clients?.email,
+    ]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(search));
+  });
+
   return (
     <>
       <div className="mb-8 flex items-center justify-between">
@@ -29,7 +54,7 @@ export default async function QuotesPage() {
       <SearchInput placeholder="Search quote..." />
 
       <div className="space-y-4">
-        {quotes?.map((quote) => (
+        {filteredQuotes?.map((quote) => (
           <QuoteCard key={quote.id} quote={quote} />
         ))}
       </div>

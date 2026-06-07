@@ -14,17 +14,25 @@ export default function ObjectiveSection({ quote, onToggle }: Props) {
   const enabled = quote.show_objective ?? true;
 
   return (
-    <section className={`rounded-lg bg-background-light p-6 ${!enabled ? "opacity-50" : ""}`}>
-      <SectionHeader title="Project Goal" enabled={enabled} onToggle={onToggle} />
-
-      <Textarea
-        defaultValue={quote.objective || ""}
-        disabled={!enabled}
-        placeholder="Describe the project goal..."
-        onBlur={(event) =>
-          updateQuoteField(quote.id, "objective", event.target.value)
-        }
+    <section className="rounded-lg bg-background-light p-6">
+      <SectionHeader
+        title="Project Goal"
+        enabled={enabled}
+        onToggle={onToggle}
       />
+
+      <div className={!enabled ? "opacity-50 cursor-not-allowed" : ""}>
+        <div className={!enabled ? "pointer-events-none" : ""}>
+          <Textarea
+            defaultValue={quote.objective || ""}
+            disabled={!enabled}
+            placeholder="Describe the project goal..."
+            onBlur={(event) =>
+              updateQuoteField(quote.id, "objective", event.target.value)
+            }
+          />
+        </div>
+      </div>
     </section>
   );
 }

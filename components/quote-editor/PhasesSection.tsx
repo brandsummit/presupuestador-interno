@@ -12,38 +12,31 @@ type Props = {
   onToggle: (value: boolean) => void;
 };
 
-export default function PhasesSection({
-  quote,
-  enabled,
-  onToggle,
-}: Props) {
+export default function PhasesSection({ quote, enabled, onToggle }: Props) {
   async function handlePhaseChange(phase: string) {
     await updateQuoteField(quote.id, "current_phase", phase);
   }
 
   return (
-    <section
-      className={`rounded-lg bg-background-light p-6 ${
-        !enabled ? "opacity-50" : ""
-      }`}
-    >
+    <section className="rounded-lg bg-background-light p-6">
       <SectionHeader
         title="Project phase"
         enabled={enabled}
         onToggle={onToggle}
       />
+      <div className={!enabled ? "opacity-50 cursor-not-allowed" : ""}>
+        <div className={!enabled ? "pointer-events-none" : ""}>
+          <div className="grid gap-3 md:grid-cols-3">
+            {phases.map((phase) => {
+              const selected = quote.current_phase === phase;
 
-      <div className="grid gap-3 md:grid-cols-3">
-        {phases.map((phase) => {
-          const selected = quote.current_phase === phase;
-
-          return (
-            <button
-              key={phase}
-              type="button"
-              disabled={!enabled}
-              onClick={() => handlePhaseChange(phase)}
-              className={`
+              return (
+                <button
+                  key={phase}
+                  type="button"
+                  disabled={!enabled}
+                  onClick={() => handlePhaseChange(phase)}
+                  className={`
                 flex items-center justify-between
                 rounded-lg
                 border
@@ -58,28 +51,24 @@ export default function PhasesSection({
                     : "border-input-border hover:border-text-muted"
                 }
               `}
-            >
-              <span className="text-lg text-text">
-                {phase}
-              </span>
+                >
+                  <span className="text-lg text-text">{phase}</span>
 
-              <span
-                className={`
+                  <span
+                    className={`
                   flex h-5 w-5 items-center justify-center rounded-full border
-                  ${
-                    selected
-                      ? "border-success"
-                      : "border-input-border"
-                  }
+                  ${selected ? "border-success" : "border-input-border"}
                 `}
-              >
-                {selected && (
-                  <span className="h-2 w-2 rounded-full bg-success" />
-                )}
-              </span>
-            </button>
-          );
-        })}
+                  >
+                    {selected && (
+                      <span className="h-2 w-2 rounded-full bg-success" />
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

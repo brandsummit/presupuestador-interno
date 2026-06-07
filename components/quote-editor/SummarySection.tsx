@@ -26,64 +26,76 @@ export default function SummarySection({
   onToggle,
 }: Props) {
   return (
-    <section className={`rounded-lg bg-background-light p-6 ${!enabled ? "opacity-50" : ""}`}>
+    <section className="rounded-lg bg-background-light p-6">
       <SectionHeader title="Resumen" enabled={enabled} onToggle={onToggle} />
 
-      <div className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <Label>Start</Label>
-            <Input
-              type="date"
-              defaultValue={formatDateInput(quote.start_at)}
-              disabled={!enabled}
-              onBlur={(event) =>
-                updateQuoteField(quote.id, "start_at", event.target.value || null)
-              }
-            />
-          </div>
+      <div className={!enabled ? "opacity-50 cursor-not-allowed" : ""}>
+        <div className={!enabled ? "pointer-events-none" : ""}>
+          <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <Label>Start</Label>
+                <Input
+                  type="date"
+                  defaultValue={formatDateInput(quote.start_at)}
+                  disabled={!enabled}
+                  onBlur={(event) =>
+                    updateQuoteField(
+                      quote.id,
+                      "start_at",
+                      event.target.value || null,
+                    )
+                  }
+                />
+              </div>
 
-          <div>
-            <Label>Duration</Label>
-            <Input
-              defaultValue={quote.duration || ""}
-              placeholder="From 8 to 10 weeks"
-              disabled={!enabled}
-              onBlur={(event) =>
-                updateQuoteField(quote.id, "duration", event.target.value)
-              }
-            />
-          </div>
+              <div>
+                <Label>Duration</Label>
+                <Input
+                  defaultValue={quote.duration || ""}
+                  placeholder="From 8 to 10 weeks"
+                  disabled={!enabled}
+                  onBlur={(event) =>
+                    updateQuoteField(quote.id, "duration", event.target.value)
+                  }
+                />
+              </div>
 
-          <div>
-            <Label>Total</Label>
-            <Input value={`${costTotal} €`} disabled />
-          </div>
-        </div>
+              <div>
+                <Label>Total</Label>
+                <Input value={`${costTotal} €`} disabled />
+              </div>
+            </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <Label>Payment Terms</Label>
-            <Textarea
-              defaultValue={quote.payment_terms || ""}
-              placeholder="50% in advance..."
-              disabled={!enabled}
-              onBlur={(event) =>
-                updateQuoteField(quote.id, "payment_terms", event.target.value)
-              }
-            />
-          </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label>Payment Terms</Label>
+                <Textarea
+                  defaultValue={quote.payment_terms || ""}
+                  placeholder="50% in advance..."
+                  disabled={!enabled}
+                  onBlur={(event) =>
+                    updateQuoteField(
+                      quote.id,
+                      "payment_terms",
+                      event.target.value,
+                    )
+                  }
+                />
+              </div>
 
-          <div>
-            <Label>Next Steps</Label>
-            <Textarea
-              defaultValue={quote.next_steps || ""}
-              placeholder="Acceptance and/or negotiation of the proposal..."
-              disabled={!enabled}
-              onBlur={(event) =>
-                updateQuoteField(quote.id, "next_steps", event.target.value)
-              }
-            />
+              <div>
+                <Label>Next Steps</Label>
+                <Textarea
+                  defaultValue={quote.next_steps || ""}
+                  placeholder="Acceptance and/or negotiation of the proposal..."
+                  disabled={!enabled}
+                  onBlur={(event) =>
+                    updateQuoteField(quote.id, "next_steps", event.target.value)
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

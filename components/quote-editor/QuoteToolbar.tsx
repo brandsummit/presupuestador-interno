@@ -1,4 +1,4 @@
-import { ArrowRight, Copy, Trash2 } from "lucide-react";
+import { ArrowRight, Copy } from "lucide-react";
 import {
   cloneQuote,
   deleteQuote,

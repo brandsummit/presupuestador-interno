@@ -2,10 +2,9 @@
 
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import { GripVertical, Trash2 } from "lucide-react";
+import { GripVertical } from "lucide-react";
 
 import CostInput from "@/components/ui/CostInput";
-import Button from "@/components/ui/Button";
 import CostAutosizeTextarea from "@/components/ui/CostAutosizeTextarea";
 import { QuoteItem } from "../types";
 import { updateQuoteCostItem, deleteQuoteCostItem } from "./actions";
