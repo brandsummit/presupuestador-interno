@@ -11,11 +11,37 @@ export type QuoteItem = {
   price?: number | null;
 };
 
+export type TimelineItem = {
+  id: number;
+  position?: number | null;
+
+  title?: string | null;
+
+  start_week?: number | null;
+  end_week?: number | null;
+
+  type?: string | null;
+
+  visible?: boolean | null;
+};
+
 export type QuoteSection = {
   id: number;
   position?: number | null;
   title?: string | null;
   quote_items?: QuoteItem[];
+};
+
+export type TimelineArea = {
+  id: number;
+  position?: number | null;
+
+  title?: string | null;
+  color?: string | null;
+
+  visible?: boolean | null;
+
+  timeline_items?: TimelineItem[];
 };
 
 export type Quote = {
@@ -55,4 +81,6 @@ export type Quote = {
   show_costs?: boolean | null;
   show_timeline?: boolean | null;
   show_summary?: boolean | null;
+
+  timeline_areas?: TimelineArea[];
 };

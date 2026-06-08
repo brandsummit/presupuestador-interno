@@ -75,7 +75,7 @@ export default async function ProcessSection({
                 {group.title}
               </h3>
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {groupItems.map((item) => {
                   const parent =
                     item.parent_key &&

@@ -7,7 +7,7 @@ import ObjectiveSection from "@/components/quote-editor/ObjectiveSection";
 import PhasesSection from "@/components/quote-editor/PhasesSection";
 import ProcessSection from "@/components/quote-editor/process/ProcessSection";
 import CostsSection from "@/components/quote-editor/costs/CostsSection";
-import TimelineSection from "@/components/quote-editor/TimelineSection";
+import TimelineSection from "@/components/quote-editor/timeline/TimelineSection";
 import SummarySection from "@/components/quote-editor/SummarySection";
 import QuoteToolbar from "@/components/quote-editor/QuoteToolbar";
 
@@ -25,16 +25,20 @@ export default async function QuotePage({ params }: QuotePageProps) {
 
   const { data: quote, error } = await supabase
     .from("quotes")
-    .select(
-      `
-      *,
-      clients(*),
-      quote_sections(
+    .select(`
         *,
-        quote_items(*)
+        clients (*),
+
+        quote_sections (
+            *,
+            quote_items (*)
+        ),
+
+        timeline_areas (
+            *,
+            timeline_items (*)
         )
-    `,
-    )
+    `)
     .eq("id", id)
     .single();
 
@@ -101,15 +105,15 @@ export default async function QuotePage({ params }: QuotePageProps) {
         quoteId={typedQuote.id}
         enabled={typedQuote.show_process ?? true}
         onToggle={async (value: boolean) => {
-            "use server";
-            const { updateQuoteSectionVisibility } = await import("./actions");
-            await updateQuoteSectionVisibility(
+          "use server";
+          const { updateQuoteSectionVisibility } = await import("./actions");
+          await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_process",
             value,
-            );
+          );
         }}
-        />
+      />
 
       <CostsSection
         quote={typedQuote}
@@ -126,10 +130,13 @@ export default async function QuotePage({ params }: QuotePageProps) {
       />
 
       <TimelineSection
+        quote={typedQuote}
         enabled={typedQuote.show_timeline ?? true}
         onToggle={async (value) => {
           "use server";
+
           const { updateQuoteSectionVisibility } = await import("./actions");
+
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_timeline",
@@ -153,7 +160,10 @@ export default async function QuotePage({ params }: QuotePageProps) {
         }}
       />
 
-      <QuoteToolbar token={String(typedQuote.token)} quoteId={String(typedQuote.id)} />
+      <QuoteToolbar
+        token={String(typedQuote.token)}
+        quoteId={String(typedQuote.id)}
+      />
     </div>
   );
 }
