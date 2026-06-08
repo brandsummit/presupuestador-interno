@@ -2,7 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { redirect } from "next/navigation";
-import { randomUUID } from "crypto";
+import { generateToken } from "@/lib/generate-token";
 
 export async function createQuote() {
   const { data: counter, error: counterError } = await supabase
@@ -34,7 +34,7 @@ export async function createQuote() {
       sequence_number: nextNumber,
       status: "draft",
       current_phase: "Construcción",
-      token: randomUUID(),
+      token: generateToken(),
       show_objective: true,
       show_phases: true,
       show_process: true,

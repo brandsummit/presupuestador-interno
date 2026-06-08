@@ -1,6 +1,6 @@
 "use server";
 
-import { randomUUID } from "crypto";
+import { generateToken } from "@/lib/generate-token";
 import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -94,7 +94,7 @@ async function duplicateQuoteBase(quoteId: string, mode: "clone" | "rectify") {
       parent_quote_id: originalQuote.parent_quote_id || originalQuote.id,
       status: "draft",
       sent_at: null,
-      token: randomUUID(),
+      token: generateToken(),
     })
     .select("id")
     .single();

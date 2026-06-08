@@ -5,7 +5,7 @@ import QuoteEditorHeader from "@/components/quote-editor/QuoteEditorHeader";
 import QuoteInfoGrid from "@/components/quote-editor/QuoteInfoGrid";
 import ObjectiveSection from "@/components/quote-editor/ObjectiveSection";
 import PhasesSection from "@/components/quote-editor/PhasesSection";
-import ProcessSection from "@/components/quote-editor/ProcessSection";
+import ProcessSection from "@/components/quote-editor/process/ProcessSection";
 import CostsSection from "@/components/quote-editor/costs/CostsSection";
 import TimelineSection from "@/components/quote-editor/TimelineSection";
 import SummarySection from "@/components/quote-editor/SummarySection";
@@ -98,17 +98,18 @@ export default async function QuotePage({ params }: QuotePageProps) {
       />
 
       <ProcessSection
+        quoteId={typedQuote.id}
         enabled={typedQuote.show_process ?? true}
-        onToggle={async (value) => {
-          "use server";
-          const { updateQuoteSectionVisibility } = await import("./actions");
-          await updateQuoteSectionVisibility(
+        onToggle={async (value: boolean) => {
+            "use server";
+            const { updateQuoteSectionVisibility } = await import("./actions");
+            await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_process",
             value,
-          );
+            );
         }}
-      />
+        />
 
       <CostsSection
         quote={typedQuote}
