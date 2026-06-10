@@ -49,7 +49,11 @@ export default function TimelineAreaCard({
   onDeleted,
   color,
 }: Props) {
-  const [items, setItems] = useState(area.timeline_items || []);
+  const [items, setItems] = useState(
+  [...(area.timeline_items || [])].sort(
+    (a, b) => (a.position || 0) - (b.position || 0),
+  ),
+);
 
   const {
     attributes,

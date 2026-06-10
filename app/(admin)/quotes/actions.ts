@@ -35,6 +35,8 @@ export async function createQuote() {
       status: "draft",
       current_phase: "Construcción",
       token: generateToken(),
+      payment_terms: "50% adelanto\n25% al validar estrategia\n25% al validar branding",
+      next_steps: "Aceptación y/o negociación de la propuesta.\nAlta de cliente en business.brandsummit.es/join\nFirma de contrato y pago de factura de arranque.\nAgendar primera reunión de brief.\nReunión de brief y arranque del proyecto",
       show_objective: true,
       show_phases: true,
       show_process: true,

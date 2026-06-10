@@ -21,7 +21,7 @@ export default function ConfirmDeleteButton({
       <form action={action}>
         <button
           type="submit"
-          className="flex h-8 items-center gap-1.5 rounded-lg border border-danger bg-content px-3 text-xs text-danger hover:opacity-80"
+          className="flex h-8 items-center gap-1.5 rounded-lg border border-danger bg-content px-3 text-xs text-danger hover:opacity-80 cursor-pointer"
         >
           <Trash2 size={14} />
           {confirmLabel}
@@ -34,7 +34,7 @@ export default function ConfirmDeleteButton({
     <button
       type="button"
       onClick={() => setConfirming(true)}
-      className="flex h-8 items-center gap-1.5 rounded-lg border border-danger px-3 text-xs bg-danger text-background hover:opacity-70"
+      className="flex h-8 items-center gap-1.5 rounded-lg border border-danger px-3 text-xs bg-danger text-background hover:opacity-70 cursor-pointer"
     >
       <Trash2 size={14} />
       {label}

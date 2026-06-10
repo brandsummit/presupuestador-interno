@@ -24,10 +24,11 @@ export default function TimelineItemRow({
   onDeleted,
 }: Props) {
   const [type, setType] = useState(item.type || "task");
-  const [startWeek, setStartWeek] = useState(item.start_week || 1);
+  const [startWeek, setStartWeek] = useState<number | null>(
+    item.start_week ?? null,
+  );
 
-  const isMeeting =
-    type === "meeting_online" || type === "meeting_presential";
+  const isMeeting = type === "meeting_online" || type === "meeting_presential";
 
   const {
     attributes,
@@ -51,7 +52,7 @@ export default function TimelineItemRow({
     onDeleted();
   }
 
-  async function handleUpdateStartWeek(value: number) {
+  async function handleUpdateStartWeek(value: number | null) {
     setStartWeek(value);
 
     await updateTimelineItem(quoteId, item.id, "start_week", value);
@@ -93,7 +94,7 @@ export default function TimelineItemRow({
 
       <CostInput
         defaultValue={item.title || ""}
-        placeholder="Task"
+        placeholder={isMeeting ? "Meeting" : "Task"}
         disabled={!enabled}
         onBlur={(event) =>
           updateTimelineItem(quoteId, item.id, "title", event.target.value)
@@ -102,26 +103,31 @@ export default function TimelineItemRow({
 
       <CostInput
         type="number"
-        defaultValue={item.start_week || 1}
+        defaultValue={item.start_week ?? ""}
         placeholder={isMeeting ? "Week" : "Start"}
         disabled={!enabled}
-        onBlur={(event) => handleUpdateStartWeek(Number(event.target.value))}
+        onBlur={(event) => {
+          const value = event.target.value;
+          handleUpdateStartWeek(value === "" ? null : Number(value));
+        }}
       />
 
       {!isMeeting && (
         <CostInput
           type="number"
-          defaultValue={item.end_week || 1}
+          defaultValue={item.end_week ?? ""}
           placeholder="End"
           disabled={!enabled}
-          onBlur={(event) =>
+          onBlur={(event) => {
+            const value = event.target.value;
+
             updateTimelineItem(
               quoteId,
               item.id,
               "end_week",
-              Number(event.target.value),
-            )
-          }
+              value === "" ? null : Number(value),
+            );
+          }}
         />
       )}
 

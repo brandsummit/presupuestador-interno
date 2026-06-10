@@ -1,5 +1,5 @@
-import { Eye, Copy, Pencil } from 'lucide-react'
-import Link from 'next/link'
+import { Eye, Copy, Pencil } from "lucide-react";
+import Link from "next/link";
 import {
   cloneQuote,
   deleteQuote,
@@ -7,65 +7,68 @@ import {
 } from "@/app/(admin)/quote/duplicate-actions";
 import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
 
-type QuoteStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'rejected'
+type QuoteStatus = "draft" | "sent" | "viewed" | "accepted" | "rejected";
 
 type QuoteCardProps = {
   quote: {
-    id: number
-    number: string
-    title: string
-    description: string | null
-    status: QuoteStatus | null
-    created_at: string | null
-    sent_at: string | null
+    id: number;
+    number: string;
+    title: string;
+    description: string | null;
+    status: QuoteStatus | null;
+    token: string | null;
+    created_at: string | null;
+    sent_at: string | null;
     clients?: {
-      name: string | null
-    } | null
-  }
-}
+      name: string | null;
+    } | null;
+  };
+};
 
 const statusColor: Record<QuoteStatus, string> = {
-  draft: 'text-text',
-  sent: 'text-text',
-  viewed: 'text-text',
-  accepted: 'text-success',
-  rejected: 'text-danger',
-}
+  draft: "text-text",
+  sent: "text-text",
+  viewed: "text-text",
+  accepted: "text-success",
+  rejected: "text-danger",
+};
 
 const statusBarColor: Record<QuoteStatus, string> = {
-  draft: 'bg-text',
-  sent: 'bg-text',
-  viewed: 'bg-text',
-  accepted: 'bg-success',
-  rejected: 'bg-danger',
-}
+  draft: "bg-text",
+  sent: "bg-text",
+  viewed: "bg-text",
+  accepted: "bg-success",
+  rejected: "bg-danger",
+};
 
 function formatDate(date: string | null) {
-  if (!date) return '—'
+  if (!date) return "—";
 
-  return new Date(date).toLocaleDateString('es-ES')
+  return new Date(date).toLocaleDateString("es-ES");
 }
 
 export default function QuoteCard({ quote }: QuoteCardProps) {
-  const status = quote.status ?? 'draft'
+  const status = quote.status ?? "draft";
 
   return (
     <article className="relative grid grid-cols-[auto_2fr_1fr_0.5fr_0.5fr_auto] items-center gap-4 rounded-lg bg-background-light py-5 pr-8 pl-5">
       <span className={`h-full w-1 rounded-full ${statusBarColor[status]}`} />
 
       <div>
-        <h3 className="text-3xl font-display font-bold leading-none">#{quote.number}</h3>
+        <h3 className="text-3xl font-display font-bold leading-none">
+          #{quote.number}
+        </h3>
         <p className="mt-2 text-base">{quote.title}</p>
         <p className="text-sm text-text-muted">{quote.description}</p>
       </div>
 
       <div className="text-sm">
         <p>
-          <span className="inline-block w-18">Created:</span>{' '}
+          <span className="inline-block w-18">Created:</span>{" "}
           {formatDate(quote.created_at)}
         </p>
         <p className="text-text-muted">
-          <span className="inline-block w-18">Sent:</span>{' '}
+          <span className="inline-block w-18">Sent:</span>{" "}
           {formatDate(quote.sent_at)}
         </p>
       </div>
@@ -86,13 +89,16 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
             Edit
           </Link>
 
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-success bg-success h-8 px-3 text-xs text-background hover:border-success hover:bg-background-light hover:text-success"
-          >
-            <Eye size={14} />
-            View & send
-          </button>
+          {quote.token && (
+            <Link
+              href={`/proposal/${quote.token}?view=full`}
+              target="_blank"
+              className="flex items-center justify-center gap-2 rounded-lg border border-success bg-success h-8 px-3 text-xs text-background hover:border-success hover:bg-background-light hover:text-success"
+            >
+              <Eye size={14} />
+              View & send
+            </Link>
+          )}
         </div>
 
         <div className="flex justify-end gap-2">
@@ -116,9 +122,9 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
             </button>
           </form>
 
-            <ConfirmDeleteButton action={deleteQuote.bind(null, String(quote.id))} />
+          <ConfirmDeleteButton action={deleteQuote.bind(null, String(quote.id))} />
         </div>
       </div>
     </article>
-  )
+  );
 }

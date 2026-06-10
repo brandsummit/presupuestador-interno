@@ -66,7 +66,7 @@ export default function CostItemRow({
 
       <CostInput
         defaultValue={item.title || ""}
-        placeholder="Servicio"
+        placeholder="Service"
         disabled={!enabled}
         onBlur={(event) =>
           updateQuoteCostItem(quoteId, item.id, "title", event.target.value)
@@ -89,17 +89,19 @@ export default function CostItemRow({
 
       <CostInput
         type="number"
-        defaultValue={item.price || 0}
-        placeholder="0"
+        defaultValue={item.price ?? ""}
+        placeholder="Price"
         disabled={!enabled}
-        onBlur={(event) =>
+        onBlur={(event) => {
+          const value = event.target.value;
+
           updateQuoteCostItem(
             quoteId,
             item.id,
             "price",
-            Number(event.target.value),
-          )
-        }
+            value === "" ? "" : Number(value),
+          );
+        }}
       />
 
       <ConfirmIconDeleteButton disabled={!enabled} onConfirm={handleDelete} />

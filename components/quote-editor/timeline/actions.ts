@@ -18,7 +18,7 @@ export async function createTimelineArea(quoteId: number) {
     .from("timeline_areas")
     .insert({
       quote_id: quoteId,
-      title: "New area",
+      title: "",
       position: nextPosition,
     })
     .select("*")
@@ -90,8 +90,8 @@ export async function createTimelineItem(
     .insert({
       area_id: areaId,
       title: "",
-      start_week: 1,
-      end_week: 1,
+      start_week: null,
+      end_week: null,
       type: "task",
       position: nextPosition,
     })
@@ -110,17 +110,20 @@ export async function createTimelineItem(
 export async function updateTimelineItem(
   quoteId: number,
   itemId: number,
-  field:
-    | "title"
-    | "start_week"
-    | "end_week"
-    | "type",
-  value: string | number,
+  field: "title" | "start_week" | "end_week" | "type",
+  value: string | number | null,
 ) {
+  const nextValue =
+    field === "start_week" || field === "end_week"
+      ? value === "" || value === null
+        ? null
+        : Number(value)
+      : value;
+
   const { error } = await supabase
     .from("timeline_items")
     .update({
-      [field]: value,
+      [field]: nextValue,
     })
     .eq("id", itemId);
 

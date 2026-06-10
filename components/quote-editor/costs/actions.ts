@@ -18,7 +18,7 @@ export async function createQuoteCostCategory(quoteId: number) {
     .from("quote_sections")
     .insert({
       quote_id: quoteId,
-      title: "New category",
+      title: "",
       position: nextPosition,
     })
     .select("*")
@@ -88,7 +88,7 @@ export async function createQuoteCostItem(quoteId: number, sectionId: number) {
       section_id: sectionId,
       title: "",
       description: "",
-      price: 0,
+      price: null,
       position: nextPosition,
     })
     .select("*")
@@ -106,14 +106,19 @@ export async function createQuoteCostItem(quoteId: number, sectionId: number) {
 export async function updateQuoteCostItem(
   quoteId: number,
   itemId: number,
-  field: "title" | "description" | "price",
-  value: string | number,
+  field: string,
+  value: string | number | null,
 ) {
+  const nextValue =
+    field === "price"
+      ? value === "" || value === null
+        ? null
+        : Number(value)
+      : value;
+
   const { error } = await supabase
     .from("quote_items")
-    .update({
-      [field]: value,
-    })
+    .update({ [field]: nextValue })
     .eq("id", itemId);
 
   if (error) {
