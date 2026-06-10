@@ -122,7 +122,7 @@ export default function ProposalProcess({ quote }: Props) {
         <h2 className="font-display text-3xl uppercase">03 - Proceso</h2>
       </div>
 
-      <div className="mt-24 hidden w-full max-w-[1300px] m-auto md:block">
+      <div className="mt-24 hidden w-full max-w-325 m-auto md:block">
         <svg
           viewBox="0 0 1416 657"
           fill="none"

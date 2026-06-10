@@ -4,6 +4,8 @@ import { FileText, Users, LogOut } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
+import { logout } from '@/app/login/actions'
+
 export default function Sidebar() {
   const pathname = usePathname()
 
@@ -53,10 +55,15 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <button className="flex items-center gap-3 rounded-lg bg-danger px-4 py-3 text-sm text-background hover:brightness-90">
-        <LogOut size={18} />
-        Logout
-      </button>
+      <form action={logout}>
+        <button
+          type="submit"
+          className="flex w-full items-center gap-3 rounded-lg bg-danger px-4 py-3 text-sm text-background hover:brightness-90 cursor-pointer"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
+      </form>
     </aside>
   )
 }

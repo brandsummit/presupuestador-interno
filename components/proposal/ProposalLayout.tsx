@@ -20,7 +20,13 @@ export default function ProposalLayout({ quote }: Props) {
 
   return (
     <main className="min-h-screen bg-prop-background text-prop-text">
-      <ProposalAdminToolbar token={typedQuote.token} />
+      <ProposalAdminToolbar
+        token={typedQuote.token}
+        quoteId={typedQuote.id}
+        quoteNumber={typedQuote.number}
+        quoteTitle={typedQuote.title}
+        clientEmail={typedQuote.clients?.email}
+      />
       <div className="space-y-60">
         <ProposalHero quote={typedQuote} />
         <ProposalObjective quote={typedQuote} />

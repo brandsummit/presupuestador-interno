@@ -1,6 +1,7 @@
 export type Client = {
   id: number;
   name: string | null;
+  email?: string | null;
 };
 
 export type QuoteItem = {

@@ -2,15 +2,29 @@ import { supabase } from "@/lib/supabase";
 import ProposalAdminToolbarClient from "./ProposalAdminToolbarClient";
 
 type Props = {
-  token: string | null;
+  token: string;
+  quoteId: number;
+  quoteNumber?: string | null;
+  quoteTitle?: string | null;
+  clientEmail?: string | null;
 };
 
-export default async function ProposalAdminToolbar({ token }: Props) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default function ProposalAdminToolbar({
+  token,
+  quoteId,
+  quoteNumber,
+  quoteTitle,
+  clientEmail,
+}: Props) {
+  if (!token) return null;
 
-  if (!user || !token) return null;
-
-  return <ProposalAdminToolbarClient token={token} />;
+  return (
+    <ProposalAdminToolbarClient
+      token={token}
+      quoteId={quoteId}
+      quoteNumber={quoteNumber}
+      quoteTitle={quoteTitle}
+      clientEmail={clientEmail}
+    />
+  );
 }
