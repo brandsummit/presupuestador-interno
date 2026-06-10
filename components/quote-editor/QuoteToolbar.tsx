@@ -14,8 +14,8 @@ import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
 
 export default function QuoteToolbar({ quoteId, token }: Props) {
   return (
-    <div className="fixed bottom-0 mb-10 left-0 w-full z-50 pl-76 flex justify-center">
-      <div className="flex items-center gap-3">
+    <div className="fixed bottom-0 mb-10 left-0 w-full z-50 pl-76 flex justify-center pointer-events-none">
+      <div className="flex items-center gap-3 pointer-events-auto">
         <div className="flex bg-background-lighter items-center gap-4 rounded-xl border border-border px-5 h-11">
           <button className="border-b border-text text-xs text-text cursor-pointer">
             Esp
