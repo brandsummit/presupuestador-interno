@@ -81,6 +81,7 @@ export type Quote = {
   clients?: {
     id: number;
     name: string | null;
+    email?: string | null;
   } | null;
 
   quote_sections?: QuoteSection[];

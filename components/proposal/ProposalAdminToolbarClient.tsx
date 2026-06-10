@@ -148,7 +148,7 @@ export default function ProposalAdminToolbarClient({
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 px-6">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-background/80 px-6">
           <div className="w-full max-w-md rounded-2xl bg-background-lighter p-5 shadow-xl">
             <div className="mb-5 flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase text-text">

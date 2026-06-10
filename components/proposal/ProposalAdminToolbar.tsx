@@ -1,8 +1,7 @@
-import { supabase } from "@/lib/supabase";
 import ProposalAdminToolbarClient from "./ProposalAdminToolbarClient";
 
 type Props = {
-  token: string;
+  token: string | null;
   quoteId: number;
   quoteNumber?: string | null;
   quoteTitle?: string | null;
