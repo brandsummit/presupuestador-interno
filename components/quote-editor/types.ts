@@ -44,6 +44,15 @@ export type TimelineArea = {
   timeline_items?: TimelineItem[];
 };
 
+export type QuoteProcessItem = {
+  id: number;
+  position?: number | null;
+  title?: string | null;
+  item_key?: string | null;
+  parent_key?: string | null;
+  enabled?: boolean | null;
+};
+
 export type Quote = {
   id: number;
 
@@ -83,4 +92,6 @@ export type Quote = {
   show_summary?: boolean | null;
 
   timeline_areas?: TimelineArea[];
+
+  quote_process_items?: QuoteProcessItem[];
 };

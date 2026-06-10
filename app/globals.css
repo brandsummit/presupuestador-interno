@@ -13,9 +13,13 @@
 
   --border: #484848;
   --input-border: #5b5b5b;
+  --border-muted: #323232;
 
   --success: #44d6b9;
   --danger: #dc8163;
+
+  --prop-background: #242424;
+  --prop-text: #CACACA;
 }
 
 @theme inline {
@@ -30,12 +34,16 @@
 
   --color-border: var(--border);
   --color-input-border: var(--input-border);
+  --color-border-muted: var(--border-muted);
 
   --color-success: var(--success);
   --color-danger: var(--danger);
 
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+
+  --color-prop-background: var(--prop-background);
+  --color-prop-text: var(--prop-text);
 }
 
 * {
