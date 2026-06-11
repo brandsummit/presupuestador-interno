@@ -1,3 +1,9 @@
+export type QuoteStatus =
+  | "draft"
+  | "sent"
+  | "accepted"
+  | "rejected";
+
 export type Client = {
   id: number;
   name: string | null;
@@ -61,7 +67,7 @@ export type Quote = {
   title: string | null;
   description: string | null;
 
-  status: string | null;
+  status: QuoteStatus | null;
 
   token: string | null;
 
