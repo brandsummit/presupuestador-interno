@@ -18,7 +18,11 @@ export default async function QuotesPage({ searchParams }: Props) {
     .select(
       `
       *,
-      clients(*)
+      clients(*),
+      quote_sections(
+        *,
+        quote_items(*)
+      )
     `,
     )
     .order("created_at", { ascending: false });

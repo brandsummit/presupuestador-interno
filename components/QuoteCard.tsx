@@ -22,6 +22,11 @@ type QuoteCardProps = {
     clients?: {
       name: string | null;
     } | null;
+    quote_sections?: {
+      quote_items?: {
+        price?: number | null;
+      }[];
+    }[];
   };
 };
 
@@ -32,11 +37,18 @@ const statusColor: Record<QuoteStatus, string> = {
   rejected: "text-danger",
 };
 
-const statusBarColor: Record<QuoteStatus, string> = {
+const statusBgColor: Record<QuoteStatus, string> = {
   draft: "bg-text",
   sent: "bg-warning",
   accepted: "bg-success",
   rejected: "bg-danger",
+};
+
+const statusGradColor: Record<QuoteStatus, string> = {
+  draft: "bg-grad-gray",
+  sent: "bg-grad-warning",
+  accepted: "bg-grad-success",
+  rejected: "bg-grad-danger",
 };
 
 function formatDate(date: string | null) {
@@ -45,84 +57,137 @@ function formatDate(date: string | null) {
   return new Date(date).toLocaleDateString("es-ES");
 }
 
+function formatPrice(value: number) {
+  const number = Math.round(Number(value || 0));
+
+  return `${number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} €`;
+}
+
+function getQuoteTotal(quote: QuoteCardProps["quote"]) {
+  return (
+    quote.quote_sections?.reduce((sum, section) => {
+      const sectionTotal =
+        section.quote_items?.reduce((itemSum, item) => {
+          return itemSum + Number(item.price || 0);
+        }, 0) || 0;
+
+      return sum + sectionTotal;
+    }, 0) || 0
+  );
+}
+
 export default function QuoteCard({ quote }: QuoteCardProps) {
   const status = quote.status ?? "draft";
+  const total = getQuoteTotal(quote);
 
   return (
-    <article className="relative grid grid-cols-[auto_2fr_1fr_0.5fr_0.5fr_auto] items-center gap-4 rounded-lg bg-background-light py-5 pr-8 pl-5">
-      <span className={`h-full w-1 rounded-full ${statusBarColor[status]}`} />
-
-      <div>
-        <h3 className="text-3xl font-display font-bold leading-none">
-          #{quote.number}
-        </h3>
-        <p className="mt-2 text-base">{quote.title}</p>
-        <p className="text-sm text-text-muted">{quote.description}</p>
-      </div>
-
-      <div className="text-sm">
-        <p>
-          <span className="inline-block w-18">Created:</span>{" "}
-          {formatDate(quote.created_at)}
-        </p>
-        <p className="text-text-muted">
-          <span className="inline-block w-18">Sent:</span>{" "}
-          {formatDate(quote.sent_at)}
-        </p>
-      </div>
-
-      <p className="text-sm uppercase">{quote.clients?.name}</p>
-
-      <p className={`text-xs font-semibold uppercase ${statusColor[status]}`}>
-        {status}
-      </p>
-
-      <div className="flex flex-col gap-2 pl-4">
-        <div className="flex justify-end gap-2">
-          <Link
-            href={`/quote/${quote.id}`}
-            className="flex items-center justify-center gap-2 rounded-lg border border-input-border h-8 px-3 text-xs hover:border-text hover:bg-text hover:text-background-light"
-          >
-            <Pencil size={14} />
-            Edit
-          </Link>
-
-          {quote.token && (
-            <Link
-              href={`/proposal/${quote.token}?view=full`}
-              target="_blank"
-              className="flex items-center justify-center gap-2 rounded-lg border border-success bg-success h-8 px-3 text-xs text-background hover:border-success hover:bg-background-light hover:text-success"
-            >
-              <Eye size={14} />
-              View & send
-            </Link>
-          )}
+    <article className={`relative flex flex-col gap-6 rounded-lg bg-background-light py-5 p-6 ${statusGradColor[status]}`}>
+      
+      <div className="flex justify-between items-end pb-6 text-text border-b border-border-light">{/* Main */}
+        
+        <div className="space-y-6">
+          <h3 className="text-3xl font-display font-bold leading-none">#{quote.number}</h3>
+          <div>
+            <p className="text-lg">{quote.title}</p>
+            <p className="text-sm">{quote.description}</p>
+          </div>
         </div>
 
-        <div className="flex justify-end gap-2">
-          <form action={cloneQuote.bind(null, String(quote.id))}>
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
-            >
-              <Copy size={14} />
-              Clone
-            </button>
-          </form>
+        <div className="flex gap-6 text-right">
+            <div className="w-50">
+              <p className="text-xs uppercase">Date</p>
+              <p className="text-lg">{formatDate(quote.created_at)}</p>
+            </div>
 
-          <form action={rectifyQuote.bind(null, String(quote.id))}>
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
-            >
-              <Copy size={14} />
-              Rectify
-            </button>
-          </form>
+            <div className="w-50">
+              <p className="text-xs uppercase">Client</p>
+              <p className="text-lg">{quote.clients?.name || "—"}</p>
+            </div>
 
-          <ConfirmDeleteButton action={deleteQuote.bind(null, String(quote.id))} />
+            <div className="w-50">
+              <p className="text-xs uppercase">Total</p>
+              <p className="text-lg">{formatPrice(total)}</p>
+            </div>
         </div>
-      </div>
+
+      </div>{/* Main */}
+      
+      <div className="flex justify-between text-text">{/* Tools */}
+        <div className="flex gap-2 items-center">
+          <span className={`size-2 rounded-4xl ${statusBgColor[status]}`}></span>
+          <p className={`text-xs font-semibold uppercase ${statusColor[status]}`}>{status}</p>
+        </div>
+
+        <div className="flex gap-8">
+          <div className="flex gap-3 items-center">
+            <p className="text-xs">View:</p>
+            <div className="flex gap-2">
+
+            {quote.token && (
+              <Link
+                href={`/proposal/${quote.token}?view=full`}
+                target="_blank"
+                className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+              >
+                <Eye size={14} />
+                Full version
+              </Link>
+            )}
+
+            {quote.token && (
+              <Link
+                href={`/proposal/${quote.token}?view=simplified`}
+                target="_blank"
+                className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+              >
+                <Eye size={14} />
+                Simple version
+              </Link>
+            )}
+
+            </div>
+          </div>
+
+          <div className="flex gap-3 items-center">
+            <p className="text-xs">Actions:</p>
+            <div className="flex gap-2">
+
+              <Link
+                href={`/quote/${quote.id}`}
+                className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+              >
+                <Pencil size={14} />
+                Edit
+              </Link>
+
+              <form action={cloneQuote.bind(null, String(quote.id))}>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+                >
+                  <Copy size={14} />
+                  Clone
+                </button>
+              </form>
+
+              <form action={rectifyQuote.bind(null, String(quote.id))}>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-8 text-xs text-background hover:opacity-60 cursor-pointer"
+                >
+                  <Copy size={14} />
+                  Rectify
+                </button>
+              </form>
+
+              <ConfirmDeleteButton
+                action={deleteQuote.bind(null, String(quote.id))}
+              />
+
+            </div>
+          </div>
+        </div>
+      </div>{/* Tools */}
     </article>
   );
 }

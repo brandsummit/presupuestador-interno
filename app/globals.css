@@ -12,6 +12,7 @@
   --text-muted: #7f7f7f;
 
   --border: #484848;
+  --border-light: #525252;
   --input-border: #5b5b5b;
   --border-muted: #323232;
 
@@ -34,6 +35,7 @@
   --color-text-muted: var(--text-muted);
 
   --color-border: var(--border);
+  --color-border-light: var(--border-light);
   --color-input-border: var(--input-border);
   --color-border-muted: var(--border-muted);
 
@@ -87,3 +89,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 textarea {
   resize: none;
 }
+
+.bg-grad-success { background: linear-gradient(90deg,rgba(68, 214, 185, 0.3) 0%, rgba(65, 65, 65, 1) 70%); }
+.bg-grad-warning { background: linear-gradient(90deg,rgba(199, 172, 54, 0.3) 0%, rgba(65, 65, 65, 1) 70%); }
+.bg-grad-danger { background: linear-gradient(90deg,rgba(220, 129, 99, 0.3) 0%, rgba(65, 65, 65, 1) 70%); }
+.bg-grad-gray { background: linear-gradient(90deg,rgba(202, 202, 202, 0.3) 0%, rgba(65, 65, 65, 1) 70%); }

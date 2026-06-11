@@ -86,7 +86,7 @@ const clientName = (client as { name?: string | null } | null)?.name || null;
   await supabase
     .from("quotes")
     .update({
-      status: "Sent",
+      status: "sent",
       sent_at: new Date().toISOString(),
     })
     .eq("id", quoteId);
