@@ -1,7 +1,7 @@
 "use client";
 
 import { Copy, Send, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { sendProposalEmail } from "@/app/actions/send-proposal-email";
 
@@ -20,7 +20,8 @@ export default function ProposalAdminToolbarClient({
   quoteTitle,
   clientEmail,
 }: Props) {
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [copied, setCopied] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [to, setTo] = useState(clientEmail || "");
@@ -30,7 +31,7 @@ export default function ProposalAdminToolbarClient({
   const [status, setStatus] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const isSimple = pathname.endsWith("/simple");
+  const isSimple = searchParams.get("view") === "simplified";
 
   const defaultSubject = `Propuesta ${quoteNumber || ""}${
     quoteTitle ? ` - ${quoteTitle}` : ""
@@ -101,7 +102,7 @@ export default function ProposalAdminToolbarClient({
             </a>
 
             <a
-              href={`/proposal/${token}/simple`}
+              href={`/proposal/${token}?view=simplified`}
               className={`
                 flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs hover:opacity-60
                 ${

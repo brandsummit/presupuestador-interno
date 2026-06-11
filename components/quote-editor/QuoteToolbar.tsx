@@ -71,7 +71,7 @@ export default function QuoteToolbar({ quoteId, token }: Props) {
           </a>
 
           <a
-            href={token ? `/proposal/${token}/simple` : "#"}
+            href={token ? `/proposal/${token}?view=simplified` : "#"}
             target="_blank"
             className="flex items-center gap-1.5 rounded-lg bg-text border border-input-border px-3 h-full text-xs text-background hover:opacity-60"
           >

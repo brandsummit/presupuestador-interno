@@ -8,20 +8,22 @@ import ProposalSummary from "./ProposalSummary";
 import ProposalProcess from "./ProposalProcess";
 import ProposalTimeline from "./ProposalTimeline";
 import ProposalFooter from "./ProposalFooter";
-import { normalizeProposalQuote } from "./utils";
 import ProposalAdminToolbar from "./ProposalAdminToolbar";
-import { supabase } from "@/lib/supabase";
+import ProposalSimplifiedLayout from "./ProposalSimplifiedLayout";
+
+import { normalizeProposalQuote } from "./utils";
 
 type Props = {
   quote: Quote;
+  viewMode?: "full" | "simplified";
 };
 
-const {
-  data: { user },
-} = await supabase.auth.getUser();
-
-export default function ProposalLayout({ quote }: Props) {
+export default function ProposalLayout({ quote, viewMode = "full" }: Props) {
   const typedQuote = normalizeProposalQuote(quote);
+
+  if (viewMode === "simplified") {
+    return <ProposalSimplifiedLayout quote={typedQuote} />;
+  }
 
   return (
     <main className="min-h-screen bg-prop-background text-prop-text">
@@ -31,7 +33,8 @@ export default function ProposalLayout({ quote }: Props) {
         quoteNumber={typedQuote.number}
         quoteTitle={typedQuote.title}
         clientEmail={typedQuote.clients?.email}
-        />
+      />
+
       <div className="space-y-60">
         <ProposalHero quote={typedQuote} />
         <ProposalObjective quote={typedQuote} />

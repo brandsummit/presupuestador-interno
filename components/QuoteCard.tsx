@@ -7,7 +7,7 @@ import {
 } from "@/app/(admin)/quote/duplicate-actions";
 import ConfirmDeleteButton from "@/components/ui/ConfirmDeleteButton";
 
-type QuoteStatus = "draft" | "sent" | "viewed" | "accepted" | "rejected";
+type QuoteStatus = "draft" | "sent" | "accepted" | "rejected";
 
 type QuoteCardProps = {
   quote: {
@@ -27,16 +27,14 @@ type QuoteCardProps = {
 
 const statusColor: Record<QuoteStatus, string> = {
   draft: "text-text",
-  sent: "text-text",
-  viewed: "text-text",
+  sent: "text-warning",
   accepted: "text-success",
   rejected: "text-danger",
 };
 
 const statusBarColor: Record<QuoteStatus, string> = {
   draft: "bg-text",
-  sent: "bg-text",
-  viewed: "bg-text",
+  sent: "bg-warning",
   accepted: "bg-success",
   rejected: "bg-danger",
 };

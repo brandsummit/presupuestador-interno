@@ -1,8 +1,10 @@
+import type { ComponentProps } from "react";
 import QuoteCard from "@/components/QuoteCard";
-import { ClientQuote } from "./types";
+
+type QuoteCardQuote = ComponentProps<typeof QuoteCard>["quote"];
 
 type Props = {
-  quotes?: ClientQuote[];
+  quotes?: QuoteCardQuote[];
 };
 
 export default function ClientQuotesSection({ quotes }: Props) {

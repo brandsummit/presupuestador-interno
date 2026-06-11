@@ -16,6 +16,7 @@
   --border-muted: #323232;
 
   --success: #44d6b9;
+  --warning: #c7ac36;
   --danger: #dc8163;
 
   --prop-background: #242424;
@@ -37,6 +38,7 @@
   --color-border-muted: var(--border-muted);
 
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-danger: var(--danger);
 
   --font-sans: var(--font-sans);
