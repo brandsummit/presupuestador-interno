@@ -35,7 +35,7 @@ export default function ProposalLayout({ quote, viewMode = "full" }: Props) {
         clientEmail={typedQuote.clients?.email}
       />
 
-      <div className="space-y-60">
+      <div className="space-y-40">
         <ProposalHero quote={typedQuote} />
         <ProposalObjective quote={typedQuote} />
         <ProposalPhase quote={typedQuote} />

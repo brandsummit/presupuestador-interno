@@ -10,18 +10,14 @@ export default function ProposalObjective({ quote }: Props) {
   }
 
   return (
-    <section className="flex min-h-[40vh] flex-col gap-60 p-6">
-      <div className="">
-        <h2 className="font-display text-3xl uppercase">
-          01 - Objetivo
-        </h2>
-      </div>
-
-      <div className="grid flex-1 md:grid-cols-2">
+    <section className="px-10">
+      <div className="grid gap-4 md:grid-cols-2">
         <div />
 
-        <div className="flex items-end">
-          <p className="max-w-3xl whitespace-pre-wrap text-lg leading-tight">
+        <div>
+          <h2 className="mb-8 font-display font-bold text-6xl">Planteamiento</h2>
+
+          <p className="max-w-3xl whitespace-pre-wrap text-sm leading-snug">
             {quote.objective}
           </p>
         </div>

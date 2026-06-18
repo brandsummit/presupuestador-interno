@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import SectionHeader from "../SectionHeader";
-import { PROCESS_GROUPS, PROCESS_ITEMS } from "./process-config";
+import { PROCESS_GROUPS } from "./process-config";
 import ProcessItemRow from "./ProcessItemRow";
 
 type Props = {
@@ -14,6 +14,24 @@ export default async function ProcessSection({
   enabled,
   onToggle,
 }: Props) {
+  const processDefinitions = PROCESS_GROUPS.flatMap((group) =>
+    group.items.flatMap((item) => [
+      {
+        key: item.key,
+        title: item.title,
+        parentKey: null,
+      },
+      ...(item.children ?? []).map((child) => ({
+        key: child.key,
+        title: child.title,
+        parentKey: item.key,
+      })),
+    ]),
+  ).map((item, index) => ({
+    ...item,
+    position: index,
+  }));
+
   const { data: existingItems, error: existingItemsError } = await supabase
     .from("quote_process_items")
     .select("*")
@@ -24,19 +42,25 @@ export default async function ProcessSection({
     throw new Error(existingItemsError.message);
   }
 
-  if (!existingItems?.length) {
-    const itemsToInsert = PROCESS_ITEMS.map((item, index) => ({
+  const existingKeys = new Set(
+    existingItems?.map((item) => item.item_key) ?? [],
+  );
+
+  const missingItems = processDefinitions
+    .filter((item) => !existingKeys.has(item.key))
+    .map((item) => ({
       quote_id: quoteId,
       title: item.title,
       item_key: item.key,
-      parent_key: item.parentKey || null,
+      parent_key: item.parentKey,
       enabled: true,
-      position: index,
+      position: item.position,
     }));
 
+  if (missingItems.length > 0) {
     const { error: insertError } = await supabase
       .from("quote_process_items")
-      .insert(itemsToInsert);
+      .insert(missingItems);
 
     if (insertError) {
       throw new Error(insertError.message);
@@ -53,11 +77,15 @@ export default async function ProcessSection({
     throw new Error(itemsError.message);
   }
 
-  const processItems = items || [];
+  const processItems = items ?? [];
 
   return (
     <section className="rounded-lg bg-background-light p-6">
-      <SectionHeader title="Process" enabled={enabled} onToggle={onToggle} />
+      <SectionHeader
+        title="Process"
+        enabled={enabled}
+        onToggle={onToggle}
+      />
 
       <div
         className={`mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5 ${
@@ -65,32 +93,52 @@ export default async function ProcessSection({
         }`}
       >
         {PROCESS_GROUPS.map((group) => {
-          const groupItems = group.itemKeys
-            .map((key) => processItems.find((item) => item.item_key === key))
-            .filter(Boolean);
+          const groupDefinitions = group.items.flatMap((item) => [
+            {
+              key: item.key,
+              parentKey: null,
+            },
+            ...(item.children ?? []).map((child) => ({
+              key: child.key,
+              parentKey: item.key,
+            })),
+          ]);
 
           return (
-            <div key={group.key} className="p-4 rounded-lg border border-input-border">
-              <h3 className="mb-1 text-xs font-medium text-text-muted">
+            <div
+              key={group.title}
+              className="rounded-lg border border-input-border p-4"
+            >
+              <h3 className="mb-3 text-xs font-medium text-text-muted">
                 {group.title}
               </h3>
 
               <div className="space-y-2">
-                {groupItems.map((item) => {
-                  const parent =
-                    item.parent_key &&
-                    processItems.find(
-                      (processItem) => processItem.item_key === item.parent_key,
-                    );
+                {groupDefinitions.map((definition) => {
+                  const item = processItems.find(
+                    (processItem) =>
+                      processItem.item_key === definition.key,
+                  );
 
-                  const parentDisabled = parent && !parent.enabled;
+                  if (!item) return null;
+
+                  const parent = definition.parentKey
+                    ? processItems.find(
+                        (processItem) =>
+                          processItem.item_key === definition.parentKey,
+                      )
+                    : null;
+
+                  const parentDisabled = Boolean(
+                    parent && !parent.enabled,
+                  );
 
                   return (
                     <ProcessItemRow
                       key={item.id}
                       quoteId={quoteId}
                       item={item}
-                      disabled={!enabled || Boolean(parentDisabled)}
+                      disabled={!enabled || parentDisabled}
                     />
                   );
                 })}

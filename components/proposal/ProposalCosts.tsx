@@ -35,10 +35,7 @@ export default function ProposalCosts({ quote }: Props) {
   const projectTotal = getProjectTotal(sections);
 
   return (
-    <section className="flex min-h-screen flex-col p-6">
-      <div>
-        <h2 className="font-display text-3xl uppercase">04 - Costes</h2>
-      </div>
+    <section className="flex min-h-screen flex-col px-10">
 
       <div className="mt-40 flex flex-1 flex-col justify-end">
         <div className="grid gap-x-20 gap-y-24 md:grid-cols-2 lg:grid-cols-3">

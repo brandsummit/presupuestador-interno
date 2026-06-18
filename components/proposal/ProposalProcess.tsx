@@ -6,110 +6,525 @@ type Props = {
 
 type ProcessKey =
   | "idea"
+  | "contacto-inicial"
   | "consultoria"
+  | "brief-inicial"
+  | "workshop-marca"
   | "posicionamiento"
-  | "tono-voz"
-  | "eslogan"
-  | "naming"
+  | "brandkey"
+  | "publico-objetivo"
+  | "territorio-personalidad"
   | "identidad-verbal"
+  | "naming"
+  | "eslogan"
+  | "tono-voz"
+  | "registro-marca"
   | "identidad-visual"
+  | "logo-principal"
+  | "universo-grafico"
+  | "direccion-arte"
+  | "aplicacion-corporativa"
   | "corporativo"
   | "redes"
   | "packaging"
+  | "concepto-global"
+  | "diseno-familia"
+  | "arte-final"
   | "diseno-maestro"
   | "aaff"
   | "interiorismo"
+  | "diseno-interiores"
+  | "busqueda-mobiliario"
   | "contenido"
+  | "fotografia"
+  | "contenido-escrito"
+  | "audiovisual"
   | "digital"
   | "web"
   | "tienda-online"
+  | "desarrollo"
   | "universo-marca"
-  | "activacion-gestion";
+  | "revision-cierre-fase"
+  | "activacion-gestion"
+  | "activacion-marca"
+  | "gestion-redes"
+  | "gestion-influencers";
 
-type NodeProps = {
-  quote: Quote;
-  itemKey: ProcessKey;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+type ProcessItem = {
   label: string;
-  textX: number;
-  textY: number;
-  rx?: number;
+  keys: ProcessKey[];
 };
 
-function isActive(quote: Quote, itemKey: string) {
-  return Boolean(
-    quote.quote_process_items?.find(
-      (item) => item.item_key === itemKey && item.enabled,
+type ProcessCardData = {
+  id: string;
+  title: string;
+  description: string;
+  keys: ProcessKey[];
+  items: ProcessItem[];
+  column: number;
+  row: number;
+};
+
+function isAnyActive(quote: Quote, keys: ProcessKey[]) {
+  return keys.some((key) =>
+    quote.quote_process_items?.some(
+      (item) => item.item_key === key && item.enabled,
     ),
   );
 }
 
-function ProcessNode({
+function ProcessCard({
   quote,
-  itemKey,
-  x,
-  y,
-  width,
-  height,
-  label,
-  textX,
-  textY,
-  rx = 11.5,
-}: NodeProps) {
-  const active = isActive(quote, itemKey);
-  const lines = label.split(/\\n|\n|&#10;/);
+  card,
+}: {
+  quote: Quote;
+  card: ProcessCardData;
+}) {
+  const cardActive =
+    isAnyActive(quote, card.keys) ||
+    card.items.some((item) => isAnyActive(quote, item.keys));
 
   return (
-    <g
-      id={`process-${itemKey}`}
-      className={active ? "opacity-100" : "opacity-25"}
+    <article
+      className={`
+        flex h-full min-w-0 flex-col rounded-xl border
+        border-prop-text/40 bg-prop-background p-5
+        transition-opacity
+        ${cardActive ? "opacity-100" : "opacity-20"}
+      `}
     >
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={rx}
-        className="stroke-current"
-      />
-      <text
-        className="fill-current"
-        xmlSpace="preserve"
-        fontSize="16"
-        letterSpacing="0px"
-      >
-        {lines.map((line, index) => (
-          <tspan key={line} x={textX} y={textY + index * 22}>
-            {line}
-          </tspan>
-        ))}
-      </text>
-    </g>
+      <div>
+        <h3 className="text-lg leading-none">{card.title}</h3>
+
+        <p className="mt-4 text-xs leading-snug text-prop-text/70">
+          {card.description}
+        </p>
+      </div>
+
+      <div className="mt-auto space-y-2 pt-8">
+        {card.items.map((item) => {
+          const active = isAnyActive(quote, item.keys);
+
+          return (
+            <div
+              key={item.label}
+              className={`
+                flex min-h-10 items-center justify-between gap-4
+                rounded-md border px-3 py-2 text-sm
+                ${
+                  active
+                    ? "border-prop-text/60 text-prop-text"
+                    : "border-prop-text/25 text-prop-text/40"
+                }
+              `}
+            >
+              <span>{item.label}</span>
+
+              <span
+                className={`
+                  flex h-4 w-4 shrink-0 items-center justify-center
+                  rounded-full border text-[10px] leading-none
+                  ${
+                    active
+                      ? "border-success bg-success text-prop-background"
+                      : "border-prop-text/40"
+                  }
+                `}
+              >
+                {active ? "✓" : ""}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </article>
   );
 }
 
-function ProcessLine({
-  x1,
-  y1,
-  x2,
-  y2,
-}: {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}) {
+const processCards: ProcessCardData[] = [
+  {
+    id: "idea",
+    title: "Idea o necesidad",
+    description:
+      "Identificamos juntos el reto, la oportunidad o la necesidad que da origen al proyecto.",
+    keys: ["idea"],
+    items: [
+      {
+        label: "Contacto inicial",
+        keys: ["contacto-inicial", "idea"],
+      },
+    ],
+    column: 4,
+    row: 1,
+  },
+  {
+    id: "consultoria",
+    title: "Consultoría",
+    description:
+      "Analizamos el contexto y definimos la dirección más adecuada para alcanzar objetivos.",
+    keys: ["consultoria"],
+    items: [
+      {
+        label: "Brief inicial",
+        keys: ["brief-inicial"],
+      },
+      {
+        label: "Workshop de marca",
+        keys: ["workshop-marca", "consultoria"],
+      },
+    ],
+    column: 2,
+    row: 2,
+  },
+  {
+    id: "posicionamiento",
+    title: "Posicionamiento",
+    description:
+      "Definimos el territorio que la marca quiere ocupar y cómo diferenciarse en su categoría.",
+    keys: ["posicionamiento"],
+    items: [
+      {
+        label: "Brandkey",
+        keys: ["brandkey"],
+      },
+      {
+        label: "Público objetivo",
+        keys: ["publico-objetivo"],
+      },
+      {
+        label: "Territorio y personalidad",
+        keys: ["territorio-personalidad"],
+      },
+    ],
+    column: 3,
+    row: 2,
+  },
+  {
+    id: "identidad-verbal",
+    title: "Identidad verbal",
+    description:
+      "Definimos cómo habla la marca, qué dice y la forma en que se relaciona con su público.",
+    keys: ["identidad-verbal"],
+    items: [
+      {
+        label: "Naming",
+        keys: ["naming"],
+      },
+      {
+        label: "Eslogan",
+        keys: ["eslogan"],
+      },
+      {
+        label: "Tono de voz",
+        keys: ["tono-voz"],
+      },
+      {
+        label: "Registro de marca",
+        keys: ["registro-marca"],
+      },
+    ],
+    column: 4,
+    row: 3,
+  },
+  {
+    id: "identidad-visual",
+    title: "Identidad visual",
+    description:
+      "Definimos el sistema gráfico que permite reconocer, diferenciar y expresar la marca.",
+    keys: ["identidad-visual"],
+    items: [
+      {
+        label: "Logo principal",
+        keys: ["logo-principal"],
+      },
+      {
+        label: "Universo gráfico",
+        keys: ["universo-grafico", "redes"],
+      },
+      {
+        label: "Dirección de arte",
+        keys: ["direccion-arte"],
+      },
+      {
+        label: "Aplicación corporativa",
+        keys: ["aplicacion-corporativa", "corporativo"],
+      },
+    ],
+    column: 5,
+    row: 3,
+  },
+  {
+    id: "packaging",
+    title: "Packaging",
+    description:
+      "Diseñamos el envase, combinando estrategia, funcionalidad y diferenciación.",
+    keys: ["packaging"],
+    items: [
+      {
+        label: "Concepto global",
+        keys: ["concepto-global", "packaging"],
+      },
+      {
+        label: "Diseño de familia",
+        keys: ["diseno-familia", "diseno-maestro"],
+      },
+      {
+        label: "Arte final",
+        keys: ["arte-final", "aaff"],
+      },
+    ],
+    column: 2,
+    row: 4,
+  },
+  {
+    id: "interiorismo",
+    title: "Interiorismo",
+    description:
+      "Diseñamos el espacio del local adaptado a las necesidades del proyecto.",
+    keys: ["interiorismo"],
+    items: [
+      {
+        label: "Diseño de interiores",
+        keys: ["diseno-interiores"],
+      },
+      {
+        label: "Búsqueda de mobiliario",
+        keys: ["busqueda-mobiliario"],
+      },
+    ],
+    column: 3,
+    row: 4,
+  },
+  {
+    id: "contenido",
+    title: "Contenido",
+    description: "Creamos contenido para nutrir la marca.",
+    keys: ["contenido"],
+    items: [
+      {
+        label: "Fotografía",
+        keys: ["fotografia"],
+      },
+      {
+        label: "Contenido escrito",
+        keys: ["contenido-escrito"],
+      },
+      {
+        label: "Audiovisual",
+        keys: ["audiovisual"],
+      },
+    ],
+    column: 4,
+    row: 4,
+  },
+  {
+    id: "digital",
+    title: "Digital",
+    description:
+      "Diseñamos y desarrollamos el entorno digital donde la marca se presenta, comunica y vende.",
+    keys: ["digital"],
+    items: [
+      {
+        label: "Web",
+        keys: ["web"],
+      },
+      {
+        label: "Tienda online",
+        keys: ["tienda-online"],
+      },
+      {
+        label: "Desarrollo",
+        keys: ["desarrollo"],
+      },
+    ],
+    column: 5,
+    row: 4,
+  },
+  {
+    id: "universo-marca",
+    title: "Universo de marca",
+    description:
+      "Tenemos la marca definida a nivel estratégico, verbal y visual, lista para activarse.",
+    keys: ["universo-marca"],
+    items: [
+      {
+        label: "Revisión y cierre de fase",
+        keys: ["revision-cierre-fase", "universo-marca"],
+      },
+    ],
+    column: 3,
+    row: 5,
+  },
+  {
+    id: "activacion-gestion",
+    title: "Activación y gestión",
+    description:
+      "Gestionamos el inicio y el manejo a largo plazo de la marca.",
+    keys: ["activacion-gestion"],
+    items: [
+      {
+        label: "Activación de marca",
+        keys: ["activacion-marca", "activacion-gestion"],
+      },
+      {
+        label: "Gestión de redes",
+        keys: ["gestion-redes"],
+      },
+      {
+        label: "Gestión de influencers",
+        keys: ["gestion-influencers"],
+      },
+    ],
+    column: 4,
+    row: 5,
+  },
+];
+
+function ProcessConnections() {
   return (
-    <line
-      x1={x1}
-      y1={y1}
-      x2={x2}
-      y2={y2}
-      className="stroke-current opacity-40"
-    />
+    <svg
+      viewBox="0 0 1800 2084"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full text-prop-text"
+    >
+      <g
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.4"
+      >
+        {/* Idea → Estrategia */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="
+            M1290 170
+            H1696
+            C1728 170 1752 194 1752 226
+            V332
+            C1752 364 1728 388 1696 388
+            H88
+            C56 388 32 412 32 444
+            V768
+            C32 800 56 824 88 824
+            H1712
+          "
+        />
+
+        {/* Línea superior hacia estrategia */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M303 388 V436"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M701 388 V436"
+        />
+
+        {/* Salida de estrategia */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M303 776 V824"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M701 776 V824"
+        />
+
+        {/* Entrada hacia identidad */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1099 824 V872"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1497 824 V872"
+        />
+
+        {/* Línea única entre identidad y áreas */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M88 1260 H1712"
+        />
+
+        {/* Salida de identidad */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1099 1212 V1260"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1497 1212 V1260"
+        />
+
+        {/* Entrada hacia las cuatro áreas */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M303 1260 V1308"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M701 1260 V1308"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1099 1260 V1308"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1497 1260 V1308"
+        />
+
+        {/* Salida de las cuatro áreas */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M303 1648 V1696"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M701 1648 V1696"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1099 1648 V1696"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M1497 1648 V1696"
+        />
+
+        {/* Cierre final hacia Universo y Activación */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="
+            M303 1696
+            H1640
+            C1680 1696 1712 1728 1712 1768
+            V1842
+            C1712 1882 1680 1914 1640 1914
+            H1290
+          "
+        />
+
+        {/* Entrada a Universo de marca */}
+        <path
+          vectorEffect="non-scaling-stroke"
+          d="M701 1696 V1744"
+        />
+      </g>
+    </svg>
   );
 }
 
@@ -117,105 +532,52 @@ export default function ProposalProcess({ quote }: Props) {
   if (!quote.show_process) return null;
 
   return (
-    <section className="flex min-h-screen flex-col p-6">
-      <div>
-        <h2 className="font-display text-3xl uppercase">03 - Proceso</h2>
+    <section className="px-10">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div />
+
+        <div>
+          <h2 className="font-display text-6xl font-bold">Proceso</h2>
+
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
+            <p className="text-sm leading-snug">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-24 hidden w-full max-w-325 m-auto md:block">
-        <svg
-          viewBox="0 0 1416 657"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-auto w-full text-text"
+      <div className="relative mx-auto mt-24 hidden w-full max-w-[1800px] lg:block">
+        <ProcessConnections />
+
+        <div
+          className="relative z-10 grid gap-x-4 gap-y-24"
+          style={{
+            gridTemplateColumns:
+              "96px repeat(4, minmax(0, 1fr)) 96px",
+            gridTemplateRows: "repeat(5, 21.25rem)",
+          }}
         >
-          {/* Lines */}
-          <ProcessLine x1={613.179} y1={90.7856} x2={646.893} y2={90.7856} />
-          <ProcessLine x1={897.643} y1={111.857} x2={931.357} y2={111.857} />
-          <ProcessLine x1={613.179} y1={151.893} x2={646.893} y2={151.893} />
-          <ProcessLine x1={897.643} y1={172.964} x2={931.357} y2={172.964} />
-          <ProcessLine x1={86.3928} y1={359.446} x2={153.821} y2={359.446} />
-          <ProcessLine x1={296.053} y1={359.446} x2={363.482} y2={359.446} />
-          <ProcessLine x1={613.179} y1={569.107} x2={646.893} y2={569.107} />
-          <ProcessLine x1={897.643} y1={548.036} x2={931.357} y2={548.036} />
-          <ProcessLine x1={808.089} y1={268.839} x2={841.804} y2={268.839} />
-          <ProcessLine x1={808.089} y1={452.161} x2={841.804} y2={452.161} />
-          <ProcessLine x1={808.089} y1={391.053} x2={841.804} y2={391.053} />
-          <ProcessLine x1={808.089} y1={329.946} x2={841.804} y2={329.946} />
-          <ProcessLine x1={974.554} y1={268.839} x2={1025.13} y2={268.839} />
-          <ProcessLine x1={944} y1={452.161} x2={1025.12} y2={452.161} />
-          <ProcessLine x1={975.607} y1={391.053} x2={1025.12} y2={391.053} />
-          <ProcessLine x1={991.411} y1={329.946} x2={1025.12} y2={329.946} />
-          <ProcessLine x1={613.179} y1={630.214} x2={646.893} y2={630.214} />
-          <ProcessLine x1={897.643} y1={609.143} x2={931.357} y2={609.143} />
-          <ProcessLine x1={613.179} y1={29.6785} x2={646.893} y2={29.6785} />
-          <ProcessLine x1={545.75} y1={359.446} x2={614.232} y2={359.446} />
-          <ProcessLine x1={614.232} y1={359.446} x2={808.089} y2={359.446} />
-          <ProcessLine x1={1025.12} y1={359.446} x2={1092.55} y2={359.446} />
-          <ProcessLine x1={1216.88} y1={359.446} x2={1284.3} y2={359.446} />
-          <ProcessLine x1={613.679} y1={292.518} x2={613.679} y2={358.893} />
-          <ProcessLine x1={613.679} y1={152.393} x2={613.679} y2={225.089} />
-          <ProcessLine x1={898.143} y1={173.464} x2={898.143} y2={246.161} />
-          <ProcessLine x1={613.679} y1={91.2856} x2={613.679} y2={151.339} />
-          <ProcessLine x1={898.143} y1={112.357} x2={898.143} y2={172.411} />
-          <ProcessLine x1={613.679} y1={30.1785} x2={613.679} y2={90.232} />
-          <ProcessLine x1={613.679} y1={359.946} x2={613.679} y2={427.375} />
-          <ProcessLine x1={808.589} y1={358.893} x2={808.589} y2={390.5} />
-          <ProcessLine x1={808.589} y1={330.446} x2={808.589} y2={358.893} />
-          <ProcessLine x1={808.589} y1={269.339} x2={808.589} y2={329.393} />
-          <ProcessLine x1={808.589} y1={391.553} x2={808.589} y2={451.607} />
-          <ProcessLine x1={613.679} y1={494.803} x2={613.679} y2={569.607} />
-          <ProcessLine x1={898.143} y1={473.732} x2={898.143} y2={548.536} />
-          <ProcessLine x1={613.679} y1={569.607} x2={613.679} y2={629.661} />
-          <ProcessLine x1={898.143} y1={548.536} x2={898.143} y2={608.589} />
-          <ProcessLine x1={1024.57} y1={358.893} x2={1024.57} y2={390.5} />
-          <ProcessLine x1={1024.57} y1={330.446} x2={1024.57} y2={358.893} />
-          <ProcessLine x1={1024.57} y1={269.34} x2={1024.5} y2={330.001} />
-          <ProcessLine x1={1024.5} y1={390.999} x2={1024.57} y2={451.606} />
-
-          {/* Nodes */}
-          <ProcessNode quote={quote} itemKey="idea" x={0.5} y={337.268} width={85.3929} height={43.25} label="Idea" textX={24} textY={365.101} />
-          <ProcessNode quote={quote} itemKey="consultoria" x={154.322} y={337.268} width={141.232} height={43.25} label="Consultoría" textX={177.822} textY={365.101} />
-          <ProcessNode quote={quote} itemKey="posicionamiento" x={363.982} y={337.268} width={181.268} height={43.25} label="Posicionamiento" textX={387.482} textY={365.101} />
-
-          <ProcessNode quote={quote} itemKey="tono-voz" x={647.393} y={7.5} width={144.393} height={43.25} label="Tono de voz" textX={670.893} textY={35.333} />
-          <ProcessNode quote={quote} itemKey="eslogan" x={647.393} y={68.6072} width={112.786} height={43.25} label="Eslogan" textX={670.893} textY={96.4402} />
-          <ProcessNode quote={quote} itemKey="naming" x={647.393} y={129.714} width={112.786} height={43.25} label="Naming" textX={670.893} textY={157.547} />
-
-          <ProcessNode quote={quote} itemKey="identidad-verbal" x={549.411} y={225.589} width={126.482} height={66.4286} label="Identidad\nverbal" textX={572.911} textY={254.012} />
-          <ProcessNode quote={quote} itemKey="identidad-visual" x={549.411} y={427.875} width={126.482} height={66.4286} label="Identidad\nvisual" textX={572.911} textY={456.297} />
-
-          <ProcessNode quote={quote} itemKey="corporativo" x={647.393} y={546.928} width={143.339} height={43.25} label="Corporativo" textX={670.893} textY={574.761} />
-          <ProcessNode quote={quote} itemKey="redes" x={647.393} y={608.036} width={98.0357} height={43.25} label="Redes" textX={670.893} textY={635.869} />
-
-          <ProcessNode quote={quote} itemKey="packaging" x={842.304} y={246.661} width={131.75} height={43.25} label="Packaging" textX={865.804} textY={274.494} />
-          <ProcessNode quote={quote} itemKey="interiorismo" x={842.304} y={307.768} width={148.607} height={43.25} label="Interiorismo" textX={865.804} textY={335.601} />
-          <ProcessNode quote={quote} itemKey="contenido" x={842.304} y={368.875} width={132.804} height={43.25} label="Contenido" textX={865.804} textY={396.708} />
-          <ProcessNode quote={quote} itemKey="digital" x={842.304} y={429.982} width={101.196} height={43.25} label="Digital" textX={865.804} textY={457.815} />
-
-          <ProcessNode quote={quote} itemKey="diseno-maestro" x={931.857} y={89.6785} width={174.946} height={43.25} label="Diseño maestro" textX={955.357} textY={117.511} />
-          <ProcessNode quote={quote} itemKey="aaff" x={931.857} y={150.786} width={89.6071} height={43.25} label="AAFF" textX={955.357} textY={178.619} />
-
-          <ProcessNode quote={quote} itemKey="web" x={931.857} y={525.857} width={85.3929} height={43.25} label="Web" textX={955.357} textY={553.69} />
-          <ProcessNode quote={quote} itemKey="tienda-online" x={931.857} y={586.964} width={157.036} height={43.25} label="Tienda online" textX={955.357} textY={614.797} />
-
-          <ProcessNode quote={quote} itemKey="universo-marca" x={1093.05} y={325.678} width={123.321} height={66.4286} label="Universo\nde marca" textX={1116.55} textY={354.101} />
-          <ProcessNode quote={quote} itemKey="activacion-gestion" x={1284.8} y={325.678} width={130.696} height={66.4286} label="Activación\ny gestión" textX={1308.3} textY={354.101} />
-        </svg>
-      </div>
-
-      <div className="mt-16 grid gap-3 md:hidden">
-        {quote.quote_process_items
-          ?.filter((item) => item.enabled)
-          .sort((a, b) => (a.position || 0) - (b.position || 0))
-          .map((item) => (
+          {processCards.map((card) => (
             <div
-              key={item.id}
-              className="rounded-xl border border-border px-5 py-3 text-base"
+              key={card.id}
+              className="min-w-0"
+              style={{
+                gridColumn: card.column,
+                gridRow: card.row,
+              }}
             >
-              {item.title}
+              <ProcessCard quote={quote} card={card} />
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="mt-20 grid gap-4 md:grid-cols-2 lg:hidden">
+        {processCards.map((card) => (
+          <ProcessCard key={card.id} quote={quote} card={card} />
+        ))}
       </div>
     </section>
   );

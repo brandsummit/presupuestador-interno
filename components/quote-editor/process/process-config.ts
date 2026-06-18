@@ -1,95 +1,256 @@
-export type ProcessItemConfig = {
+export type ProcessItemDefinition = {
   key: string;
   title: string;
-  parentKey?: string;
+  children?: ProcessItemDefinition[];
 };
 
-export type ProcessGroupConfig = {
-  key: string;
+export type ProcessGroupDefinition = {
   title: string;
-  itemKeys: string[];
+  items: ProcessItemDefinition[];
 };
 
-export const PROCESS_ITEMS: ProcessItemConfig[] = [
-  { key: "idea", title: "Idea" },
-
-  { key: "consultoria", title: "Consultoría" },
-  { key: "posicionamiento", title: "Posicionamiento" },
-
-  { key: "identidad-verbal", title: "Identidad verbal" },
-  { key: "tono-voz", title: "Tono de voz", parentKey: "identidad-verbal" },
-  { key: "eslogan", title: "Eslogan", parentKey: "identidad-verbal" },
-  { key: "naming", title: "Naming", parentKey: "identidad-verbal" },
-
-  { key: "identidad-visual", title: "Identidad visual" },
-  { key: "corporativo", title: "Corporativo", parentKey: "identidad-visual" },
-  { key: "redes", title: "Redes", parentKey: "identidad-visual" },
-
-  { key: "packaging", title: "Packaging" },
-  { key: "diseno-maestro", title: "Diseño maestro", parentKey: "packaging" },
-  { key: "aaff", title: "AAFF", parentKey: "packaging" },
-
-  { key: "interiorismo", title: "Interiorismo" },
-
-  { key: "contenido", title: "Contenido" },
-
-  { key: "digital", title: "Digital" },
-  { key: "web", title: "Web", parentKey: "digital" },
-  { key: "tienda-online", title: "Tienda online", parentKey: "digital" },
-
-  { key: "universo-marca", title: "Universo de marca" },
-
-  { key: "activacion-gestion", title: "Activación y gestión" },
-];
-
-export const PROCESS_GROUPS: ProcessGroupConfig[] = [
-  { key: "arranque", title: "Arranque", itemKeys: ["idea"] },
+export const PROCESS_GROUPS: ProcessGroupDefinition[] = [
   {
-    key: "estrategia",
-    title: "Estrategia",
-    itemKeys: ["consultoria", "posicionamiento"],
-  },
-  {
-    key: "branding",
-    title: "Branding",
-    itemKeys: [
-      "identidad-verbal",
-      "tono-voz",
-      "eslogan",
-      "naming",
-      "identidad-visual",
-      "corporativo",
-      "redes",
+    title: "Arranque",
+    items: [
+      {
+        key: "idea",
+        title: "Idea o necesidad",
+        children: [
+          {
+            key: "contacto-inicial",
+            title: "Contacto inicial",
+          },
+        ],
+      },
     ],
   },
   {
-    key: "packaging",
+    title: "Estrategia",
+    items: [
+      {
+        key: "consultoria",
+        title: "Consultoría",
+        children: [
+          {
+            key: "brief-inicial",
+            title: "Brief inicial",
+          },
+          {
+            key: "workshop-marca",
+            title: "Workshop de marca",
+          },
+        ],
+      },
+      {
+        key: "posicionamiento",
+        title: "Posicionamiento",
+        children: [
+          {
+            key: "brandkey",
+            title: "Brandkey",
+          },
+          {
+            key: "publico-objetivo",
+            title: "Público objetivo",
+          },
+          {
+            key: "territorio-personalidad",
+            title: "Territorio y personalidad",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Identidad verbal",
+    items: [
+      {
+        key: "identidad-verbal",
+        title: "Identidad verbal",
+        children: [
+          {
+            key: "naming",
+            title: "Naming",
+          },
+          {
+            key: "eslogan",
+            title: "Eslogan",
+          },
+          {
+            key: "tono-voz",
+            title: "Tono de voz",
+          },
+          {
+            key: "registro-marca",
+            title: "Registro de marca",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Identidad visual",
+    items: [
+      {
+        key: "identidad-visual",
+        title: "Identidad visual",
+        children: [
+          {
+            key: "logo-principal",
+            title: "Logo principal",
+          },
+          {
+            key: "universo-grafico",
+            title: "Universo gráfico",
+          },
+          {
+            key: "direccion-arte",
+            title: "Dirección de arte",
+          },
+          {
+            key: "aplicacion-corporativa",
+            title: "Aplicación corporativa",
+          },
+        ],
+      },
+    ],
+  },
+  {
     title: "Packaging",
-    itemKeys: ["packaging", "diseno-maestro", "aaff"],
+    items: [
+      {
+        key: "packaging",
+        title: "Packaging",
+        children: [
+          {
+            key: "concepto-global",
+            title: "Concepto global",
+          },
+          {
+            key: "diseno-familia",
+            title: "Diseño de familia",
+          },
+          {
+            key: "arte-final",
+            title: "Arte final",
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "interiorismo",
     title: "Interiorismo",
-    itemKeys: ["interiorismo"],
+    items: [
+      {
+        key: "interiorismo",
+        title: "Interiorismo",
+        children: [
+          {
+            key: "diseno-interiores",
+            title: "Diseño de interiores",
+          },
+          {
+            key: "busqueda-mobiliario",
+            title: "Búsqueda de mobiliario",
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "contenido",
     title: "Contenido",
-    itemKeys: ["contenido"],
+    items: [
+      {
+        key: "contenido",
+        title: "Contenido",
+        children: [
+          {
+            key: "fotografia",
+            title: "Fotografía",
+          },
+          {
+            key: "contenido-escrito",
+            title: "Contenido escrito",
+          },
+          {
+            key: "audiovisual",
+            title: "Audiovisual",
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "digital",
     title: "Digital",
-    itemKeys: ["digital", "web", "tienda-online"],
+    items: [
+      {
+        key: "digital",
+        title: "Digital",
+        children: [
+          {
+            key: "web",
+            title: "Web",
+          },
+          {
+            key: "tienda-online",
+            title: "Tienda online",
+          },
+          {
+            key: "desarrollo",
+            title: "Desarrollo",
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "finalizacion",
     title: "Finalización",
-    itemKeys: ["universo-marca"],
+    items: [
+      {
+        key: "universo-marca",
+        title: "Universo de marca",
+        children: [
+          {
+            key: "revision-cierre-fase",
+            title: "Revisión y cierre de fase",
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "post-proyecto",
     title: "Post proyecto",
-    itemKeys: ["activacion-gestion"],
+    items: [
+      {
+        key: "activacion-gestion",
+        title: "Activación y gestión",
+        children: [
+          {
+            key: "activacion-marca",
+            title: "Activación de marca",
+          },
+          {
+            key: "gestion-redes",
+            title: "Gestión de redes",
+          },
+          {
+            key: "gestion-influencers",
+            title: "Gestión de influencers",
+          },
+        ],
+      },
+    ],
   },
 ];
+
+export const PROCESS_ITEMS = PROCESS_GROUPS.flatMap((group) =>
+  group.items.flatMap((item) => [
+    item,
+    ...(item.children ?? []),
+  ]),
+).map((item, index) => ({
+  key: item.key,
+  title: item.title,
+  position: index + 1,
+}));

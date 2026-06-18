@@ -28,33 +28,43 @@ export default function ProposalPhase({ quote }: Props) {
   }
 
   return (
-    <section className="flex min-h-screen flex-col gap-40 p-6">
-      <div>
-        <h2 className="font-display text-3xl uppercase">02 - Fases</h2>
+    <section className="px-10">
+      <h2 className="font-display text-6xl font-bold">Fases</h2>
+      <div className="mt-16 gap-4 grid md:grid-cols-3">
+        <p className="text-sm leading-snug">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore.
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="mt-12 grid gap-4 md:grid-cols-3">
         {phases.map((phase, index) => {
           const selected = quote.current_phase === phase.label;
+
+          const borderRadius =
+            index === 0
+              ? "rounded-l-[36px] rounded-r-xl"
+              : index === phases.length - 1
+                ? "rounded-l-xl rounded-r-[36px]"
+                : "rounded-xl";
 
           return (
             <article
               key={phase.label}
               className={`
-                flex h-105 flex-col justify-between rounded-[1.75rem] border p-8
-                ${index === 1 ? "mt-16" : ""}
-                ${index === 2 ? "mt-32" : ""}
+                flex min-h-110 flex-col justify-between border p-10
+                ${borderRadius}
                 ${
                   selected
-                    ? "border-text text-text"
-                    : "border-border text-text-muted opacity-70"
+                    ? "border-prop-text bg-prop-text text-prop-background"
+                    : "border-prop-text/25 text-prop-text/30"
                 }
               `}
             >
-              <div className="space-y-5">
+              <div>
                 <h3 className="text-2xl leading-none">{phase.label}</h3>
 
-                <p className="max-w-md text-base leading-snug">
+                <p className="mt-6 max-w-md text-sm leading-snug">
                   {phase.description}
                 </p>
               </div>
@@ -62,10 +72,15 @@ export default function ProposalPhase({ quote }: Props) {
               <div className="flex items-center gap-3 text-sm">
                 <span
                   className={`
-                    h-2 w-2 rounded-full
-                    ${selected ? "bg-success" : "bg-text"}
+                    h-3 w-3 rounded-full border
+                    ${
+                      selected
+                        ? "border-prop-background bg-success"
+                        : "border-prop-text/30"
+                    }
                   `}
                 />
+
                 <span>Fase {index + 1}</span>
               </div>
             </article>
