@@ -8,9 +8,11 @@ import { supabase } from "@/lib/supabase";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const ADMIN_EMAILS = [
-  //"david@brandsummit.es",
+  "david@brandsummit.es",
   "fran@brandsummit.es",
 ];
+
+type ProposalLanguage = "es" | "en";
 
 type AcceptProposalInput = {
   quoteId: number;
@@ -44,13 +46,44 @@ function getClient(
 function clientEmailTemplate({
   clientName,
   quoteTitle,
+  language,
 }: {
   clientName: string;
   quoteTitle: string;
+  language: ProposalLanguage;
 }) {
+  const translations = {
+    es: {
+      title: "Propuesta aceptada",
+      greeting: `Hola ${escapeHtml(clientName)},`,
+      accepted: `
+        Hemos recibido la aceptación de la propuesta
+        <strong>${escapeHtml(quoteTitle)}</strong>.
+      `,
+      thanks: `
+        Gracias por confiar en Brandsummit. Nos pondremos en contacto contigo
+        cuanto antes para continuar con los siguientes pasos.
+      `,
+    },
+    en: {
+      title: "Proposal accepted",
+      greeting: `Hello ${escapeHtml(clientName)},`,
+      accepted: `
+        We have received your acceptance of the proposal
+        <strong>${escapeHtml(quoteTitle)}</strong>.
+      `,
+      thanks: `
+        Thank you for trusting Brandsummit. We will contact you shortly to
+        continue with the next steps.
+      `,
+    },
+  } as const;
+
+  const t = translations[language];
+
   return `
     <!doctype html>
-    <html lang="es">
+    <html lang="${language}">
       <body style="margin:0;padding:0;background:#3b3b3b;font-family:Arial,Helvetica,sans-serif;color:#cacaca;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;background:#3b3b3b;">
           <tr>
@@ -63,22 +96,19 @@ function clientEmailTemplate({
                     </p>
 
                     <h1 style="margin:0 0 40px;font-size:36px;line-height:1;font-weight:400;color:#cacaca;">
-                      Propuesta aceptada
+                      ${t.title}
                     </h1>
 
                     <p style="margin:0 0 20px;font-size:18px;line-height:1.4;">
-                      Hola ${escapeHtml(clientName)},
+                      ${t.greeting}
                     </p>
 
                     <p style="margin:0 0 20px;font-size:18px;line-height:1.4;">
-                      Hemos recibido la aceptación de la propuesta
-                      <strong>${escapeHtml(quoteTitle)}</strong>.
+                      ${t.accepted}
                     </p>
 
                     <p style="margin:0;font-size:18px;line-height:1.4;">
-                      Gracias por confiar en Brandsummit. Nos pondremos en
-                      contacto contigo cuanto antes para continuar con los
-                      siguientes pasos.
+                      ${t.thanks}
                     </p>
                   </td>
                 </tr>
@@ -98,6 +128,42 @@ function clientEmailTemplate({
         </table>
       </body>
     </html>
+  `;
+}
+
+function clientEmailText({
+  clientName,
+  quoteTitle,
+  language,
+}: {
+  clientName: string;
+  quoteTitle: string;
+  language: ProposalLanguage;
+}) {
+  if (language === "en") {
+    return `
+Hello ${clientName},
+
+We have received your acceptance of the proposal "${quoteTitle}".
+
+Thank you for trusting Brandsummit. We will contact you shortly to continue with the next steps.
+
+David Baldoví
+Strategy & Management
+Brandsummit
+    `;
+  }
+
+  return `
+Hola ${clientName},
+
+Hemos recibido la aceptación de la propuesta "${quoteTitle}".
+
+Gracias por confiar en Brandsummit. Nos pondremos en contacto contigo cuanto antes para continuar con los siguientes pasos.
+
+David Baldoví
+Strategy & Management
+Brandsummit
   `;
 }
 
@@ -163,6 +229,7 @@ export async function acceptProposal({
       title,
       status,
       token,
+      language,
       clients (
         name,
         email
@@ -205,10 +272,20 @@ export async function acceptProposal({
     quote.clients as ClientData | ClientData[] | null,
   );
 
-  const clientName = client?.name || "cliente";
+  const language: ProposalLanguage =
+    quote.language === "en" ? "en" : "es";
+
+  const clientName =
+    client?.name || (language === "en" ? "client" : "cliente");
+
   const clientEmail = client?.email || null;
   const quoteNumber = quote.number || String(quote.id);
-  const quoteTitle = quote.title || `Propuesta ${quoteNumber}`;
+
+  const quoteTitle =
+    quote.title ||
+    (language === "en"
+      ? `Proposal ${quoteNumber}`
+      : `Propuesta ${quoteNumber}`);
 
   if (process.env.RESEND_API_KEY) {
     const from =
@@ -245,22 +322,20 @@ Email: ${clientEmail || "No disponible"}
       const clientResult = await resend.emails.send({
         from,
         to: clientEmail,
-        subject: `Hemos recibido tu aceptación · ${quoteTitle}`,
+        subject:
+          language === "en"
+            ? `We have received your acceptance · ${quoteTitle}`
+            : `Hemos recibido tu aceptación · ${quoteTitle}`,
         html: clientEmailTemplate({
           clientName,
           quoteTitle,
+          language,
         }),
-        text: `
-Hola ${clientName},
-
-Hemos recibido la aceptación de la propuesta "${quoteTitle}".
-
-Gracias por confiar en Brandsummit. Nos pondremos en contacto contigo cuanto antes para continuar con los siguientes pasos.
-
-David Baldoví
-Strategy & Management
-Brandsummit
-        `,
+        text: clientEmailText({
+          clientName,
+          quoteTitle,
+          language,
+        }),
       });
 
       if (clientResult.error) {

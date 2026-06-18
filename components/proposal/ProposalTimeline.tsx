@@ -4,6 +4,8 @@ import {
   TimelineItem,
 } from "@/components/quote-editor/types";
 
+import { getProposalTranslations } from "./proposal-translations";
+
 type Props = {
   quote: Quote;
 };
@@ -115,16 +117,19 @@ export default function ProposalTimeline({ quote }: Props) {
 
   if (!areas.length) return null;
 
+  const t = getProposalTranslations(quote.language);
   const maxWeek = getMaxWeek(areas);
   const gridTemplateColumns = `190px repeat(${maxWeek + 1}, minmax(64px, 1fr))`;
 
   return (
-    <section className="">
-      <h2 className="px-10 font-display text-6xl font-bold">Tiempos</h2>
+    <section>
+      <h2 className="px-10 font-display text-6xl font-bold">
+        {t.timeline.title}
+      </h2>
 
-      <div className="px-10 mt-8 grid gap-4 md:grid-cols-3">
+      <div className="mt-8 grid gap-4 px-10 md:grid-cols-3">
         <p className="text-base leading-snug">
-          Trabajamos bajo una metodología propia, llamada Do it clear, que estructura el proyecto en etapas definidas, con objetivos, entregables y tiempos específicos para cada una de ellas. Este enfoque, basado en procesos de ingeniería, nos permite avanzar de forma ordenada, reducir la incertidumbre y garantizar que cada decisión se apoya en el trabajo realizado previamente.
+          {t.timeline.intro}
         </p>
       </div>
 
@@ -149,7 +154,7 @@ export default function ProposalTimeline({ quote }: Props) {
                       className="absolute left-1/2 top-4 -translate-x-1/2 whitespace-nowrap text-xs text-text-muted"
                       style={{ writingMode: "vertical-rl" }}
                     >
-                      Semana {week}
+                      {t.timeline.week} {week}
                     </p>
                   )}
                 </div>
@@ -176,7 +181,7 @@ export default function ProposalTimeline({ quote }: Props) {
                     minHeight: `${areaHeight}px`,
                   }}
                 >
-                  <div className="pl-10 z-10 flex items-start gap-3 pt-7 text-base text-text-muted">
+                  <div className="z-10 flex items-start gap-3 pl-10 pt-7 text-base text-text-muted">
                     <span
                       className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: colors.area }}
@@ -263,20 +268,20 @@ export default function ProposalTimeline({ quote }: Props) {
           </div>
         </div>
 
-        <div className="px-10 mt-8 space-y-1 text-xs">
+        <div className="mt-8 space-y-1 px-10 text-xs">
           <div className="flex items-center gap-2 text-[#b8b8b8]">
             <span className="text-base leading-none">◆</span>
-            <span>Reunión online</span>
+            <span>{t.timeline.onlineMeeting}</span>
           </div>
 
           <div className="flex items-center gap-2 text-[#43e5ca]">
             <span className="text-base leading-none">◆</span>
-            <span>Reunión presencial</span>
+            <span>{t.timeline.presentialMeeting}</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-16 space-y-10 md:hidden">
+      <div className="mt-16 space-y-10 px-10 md:hidden">
         {areas.map((area, index) => {
           const colors = getColorGroup(index);
 
@@ -303,11 +308,11 @@ export default function ProposalTimeline({ quote }: Props) {
                     }}
                   >
                     <p className="text-xs opacity-70">
-                      Semana {item.start_week}
+                      {t.timeline.week} {item.start_week}
                       {!isMeeting(item) &&
                       item.end_week &&
                       item.end_week !== item.start_week
-                        ? ` — Semana ${item.end_week}`
+                        ? ` — ${t.timeline.week} ${item.end_week}`
                         : ""}
                     </p>
 

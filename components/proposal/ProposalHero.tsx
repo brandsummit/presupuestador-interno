@@ -1,14 +1,17 @@
 import Image from "next/image";
 
 import { Quote } from "@/components/quote-editor/types";
+import { getProposalTranslations } from "./proposal-translations";
 
 type Props = {
   quote: Quote;
 };
 
 export default function ProposalHero({ quote }: Props) {
+  const t = getProposalTranslations(quote.language);
+
   return (
-    <header className="overflow-hidden px-10 pt-10">
+    <header className="overflow-hidden px-6 pt-6">
       <div className="relative w-full">
         <Image
           src="/brandsummit-logo.svg"
@@ -20,25 +23,25 @@ export default function ProposalHero({ quote }: Props) {
         />
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-4">
-        <div className="text-base leading-snug">
-          <p>Propuesta {quote.number}</p>
-          <p>{quote.title || "Untitled proposal"}</p>
-          <p>{quote.clients?.name || "Cliente"}</p>
+      <div className="mt-10 grid gap-10 md:grid-cols-4 md:gap-4">
+        <div className="text-sm leading-snug">
+          <p>
+            {t.hero.proposal} {quote.number}
+          </p>
+
+          <p>{quote.title || t.hero.untitled}</p>
+
+          <p>{quote.clients?.name || t.hero.client}</p>
         </div>
 
         <div />
 
-        <p className="max-w-sm text-base leading-snug">
-          Brandsummit es un estudio especializado en la construcción, activación
-          y gestión de marcas de alimentación y bebida, desde las áreas de
-          branding, packaging, interior y digital.
+        <p className="max-w-sm text-sm leading-snug">
+          {t.hero.description}
         </p>
 
-        <p className="max-w-sm text-base leading-snug">
-          Un estudio con una metodología propia de trabajo que garantiza
-          tiempos, estrategia y creatividad. Con una profunda toma de decisiones
-          para dotar de coherencia y consistencia a las marcas.
+        <p className="max-w-sm text-sm leading-snug">
+          {t.hero.methodology}
         </p>
       </div>
     </header>

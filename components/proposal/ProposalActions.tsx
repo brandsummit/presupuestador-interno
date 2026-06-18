@@ -5,56 +5,45 @@ import { useRouter } from "next/navigation";
 
 import { Quote } from "@/components/quote-editor/types";
 import { acceptProposal } from "./actions";
+import { getProposalTranslations } from "./proposal-translations";
 
 type Props = {
   quote: Quote;
 };
 
-type ActionCard = {
-  type: "action" | "information";
-  number: string;
-  title: string;
-  description: string;
-};
-
-const cards: ActionCard[] = [
-  {
-    type: "action",
-    number: "01",
-    title: "Aceptar propuesta",
-    description:
-      "Confirmar la aceptación de la propuesta para reservar la fecha de inicio y activar la planificación del proyecto.",
-  },
-  {
-    type: "action",
-    number: "02",
-    title: "Alta de cliente",
-    description:
-      "Completar el alta de cliente y facilitar los datos necesarios para la correcta gestión administrativa y contractual del proyecto.",
-  },
-  {
-    type: "information",
-    number: "03",
-    title: "Firma de contrato",
-    description:
-      "Firmar el acuerdo de colaboración para formalizar el alcance, las condiciones y el inicio del proyecto, según esta propuesta de trabajo.",
-  },
-  {
-    type: "information",
-    number: "04",
-    title: "Arranque de proyecto",
-    description:
-      "Agendar la sesión de brief inicial. Claudia Vera, responsable de planificación y gestión del proyecto, se pondrá en contacto para coordinar la reunión, día, hora y lugar.",
-  },
-];
-
 export default function ProposalActions({ quote }: Props) {
   const router = useRouter();
+  const t = getProposalTranslations(quote.language);
+
+  const cards = [
+    {
+      type: "action",
+      number: "01",
+      title: t.actions.acceptTitle,
+      description: t.actions.acceptDescription,
+    },
+    {
+      type: "action",
+      number: "02",
+      title: t.actions.clientTitle,
+      description: t.actions.clientDescription,
+    },
+    {
+      type: "information",
+      number: "03",
+      title: t.actions.contractTitle,
+      description: t.actions.contractDescription,
+    },
+    {
+      type: "information",
+      number: "04",
+      title: t.actions.briefTitle,
+      description: t.actions.briefDescription,
+    },
+  ] as const;
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [accepted, setAccepted] = useState(
-    quote.status === "accepted",
-  );
+  const [accepted, setAccepted] = useState(quote.status === "accepted");
   const [completed, setCompleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -71,7 +60,7 @@ export default function ProposalActions({ quote }: Props) {
       });
 
       if (!result.ok) {
-        setError(result.error ?? "No se ha podido aceptar la propuesta.");
+        setError(result.error ?? t.actions.error);
         return;
       }
 
@@ -93,13 +82,8 @@ export default function ProposalActions({ quote }: Props) {
     <>
       <section className="px-10">
         <h2 className="font-display text-6xl font-bold">
-          Próximos pasos
+          {t.actions.title}
         </h2>
-        <div className="mt-8 gap-4 grid md:grid-cols-2">
-          <p className="text-base leading-snug">
-            Si la propuesta se ajusta a vuestras necesidades y objetivos, os indicamos las acciones necesarias para poner en marcha el proyecto y comenzar a trabajar de forma coordinada desde el primer día.
-          </p>
-        </div>
 
         <div className="mt-24 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, index) => {
@@ -110,7 +94,7 @@ export default function ProposalActions({ quote }: Props) {
               <article
                 key={card.number}
                 className={`
-                  flex min-h-120 flex-col justify-between gap-12
+                  flex min-h-[480px] flex-col justify-between gap-12
                   bg-prop-text p-10 text-prop-background
                   ${
                     firstCard
@@ -125,8 +109,8 @@ export default function ProposalActions({ quote }: Props) {
                   <div className="flex items-center justify-between gap-6 text-xs uppercase">
                     <span>
                       {card.type === "action"
-                        ? "Acción"
-                        : "Información"}
+                        ? t.actions.action
+                        : t.actions.information}
                     </span>
 
                     <span>{card.number}</span>
@@ -147,19 +131,18 @@ export default function ProposalActions({ quote }: Props) {
                     disabled={accepted}
                     onClick={() => setModalOpen(true)}
                     className={`
-                      flex min-h-16 w-full cursor-pointer items-center
-                      justify-center rounded-md px-6 text-center text-base
-                      transition
+                      flex min-h-16 w-full items-center justify-center rounded-md
+                      px-6 text-center text-base transition
                       ${
                         accepted
                           ? "cursor-default bg-prop-background/25 text-prop-background/60"
-                          : "bg-prop-background text-prop-text hover:opacity-85"
+                          : "cursor-pointer bg-prop-background text-prop-text hover:opacity-85"
                       }
                     `}
                   >
                     {accepted
-                      ? "Propuesta aceptada"
-                      : "Aceptar propuesta"}
+                      ? t.actions.accepted
+                      : t.actions.acceptButton}
                   </button>
                 )}
 
@@ -168,7 +151,7 @@ export default function ProposalActions({ quote }: Props) {
                     href="https://business.brandsummit.es/join/"
                     className="flex min-h-16 w-full items-center justify-center rounded-md bg-prop-background px-6 text-center text-base text-prop-text transition hover:opacity-85"
                   >
-                    Ir al portal de clientes
+                    {t.actions.clientPortal}
                   </a>
                 )}
               </article>
@@ -179,7 +162,7 @@ export default function ProposalActions({ quote }: Props) {
 
       {modalOpen && (
         <div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/75 p-6"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-6"
           role="dialog"
           aria-modal="true"
           aria-labelledby="accept-proposal-title"
@@ -192,19 +175,19 @@ export default function ProposalActions({ quote }: Props) {
           <div className="w-full max-w-xl rounded-[36px] bg-prop-text p-10 text-prop-background">
             {completed ? (
               <>
-                <p className="text-xs uppercase">Propuesta aceptada</p>
+                <p className="text-xs uppercase">
+                  {t.actions.successLabel}
+                </p>
 
                 <h3
                   id="accept-proposal-title"
                   className="mt-8 font-display text-5xl font-bold leading-none"
                 >
-                  Gracias por confiar en nosotros.
+                  {t.actions.successTitle}
                 </h3>
 
                 <p className="mt-8 text-base leading-snug text-prop-background/70">
-                  Hemos recibido tu confirmación. Nos pondremos en
-                  contacto contigo cuanto antes para continuar con los
-                  siguientes pasos.
+                  {t.actions.successDescription}
                 </p>
 
                 <button
@@ -212,34 +195,32 @@ export default function ProposalActions({ quote }: Props) {
                   onClick={closeModal}
                   className="mt-12 min-h-14 w-full cursor-pointer rounded-md bg-prop-background px-6 text-prop-text"
                 >
-                  Cerrar
+                  {t.actions.close}
                 </button>
               </>
             ) : (
               <>
                 <p className="text-xs uppercase">
-                  Confirmar aceptación
+                  {t.actions.confirmLabel}
                 </p>
 
                 <h3
                   id="accept-proposal-title"
                   className="mt-8 font-display text-5xl font-bold leading-none"
                 >
-                  Gracias por tu interés.
+                  {t.actions.thanksTitle}
                 </h3>
 
                 <p className="mt-8 text-base leading-snug text-prop-background/70">
-                  Confirma que deseas aceptar esta propuesta. Nos
-                  pondremos en contacto contigo cuanto antes.
+                  {t.actions.confirmDescription}
                 </p>
 
-                <p className="mt-8 rounded-xl border border-prop-background/20 p-5 text-base leading-snug text-prop-background/55">
-                  Esta confirmación no es vinculante y no sustituye la
-                  posterior firma del contrato.
+                <p className="mt-8 rounded-xl border border-prop-background/20 p-5 text-sm leading-snug text-prop-background/55">
+                  {t.actions.legalNotice}
                 </p>
 
                 {error && (
-                  <p className="mt-6 text-base text-danger">
+                  <p className="mt-6 text-sm text-danger">
                     {error}
                   </p>
                 )}
@@ -251,7 +232,7 @@ export default function ProposalActions({ quote }: Props) {
                     onClick={closeModal}
                     className="min-h-14 cursor-pointer rounded-md border border-prop-background/30 px-6 disabled:cursor-wait disabled:opacity-50"
                   >
-                    Volver
+                    {t.actions.back}
                   </button>
 
                   <button
@@ -261,8 +242,8 @@ export default function ProposalActions({ quote }: Props) {
                     className="min-h-14 cursor-pointer rounded-md bg-prop-background px-6 text-prop-text disabled:cursor-wait disabled:opacity-50"
                   >
                     {isPending
-                      ? "Aceptando..."
-                      : "Confirmar aceptación"}
+                      ? t.actions.confirming
+                      : t.actions.confirmButton}
                   </button>
                 </div>
               </>

@@ -1,5 +1,7 @@
 import { Quote } from "@/components/quote-editor/types";
+
 import { formatPrice, getProposalTotal } from "./utils";
+import { getProposalTranslations } from "./proposal-translations";
 
 type Props = {
   quote: Quote;
@@ -62,17 +64,24 @@ function getMaxWeek(quote: Quote) {
   );
 }
 
-function getDurationLabel(quote: Quote) {
+function getDurationLabel(
+  quote: Quote,
+  language: "es" | "en",
+  week: string,
+  weeks: string,
+) {
   const maxWeek = getMaxWeek(quote);
 
   if (maxWeek <= 3) {
-    return `${maxWeek} ${maxWeek === 1 ? "semana" : "semanas"}`;
+    return `${maxWeek} ${maxWeek === 1 ? week : weeks}`;
   }
 
-  return `${maxWeek - 2} a ${maxWeek} semanas`;
+  return language === "en"
+    ? `${maxWeek - 2} to ${maxWeek} ${weeks}`
+    : `${maxWeek - 2} a ${maxWeek} ${weeks}`;
 }
 
-function getCostSections(quote: Quote) {
+function getCostSections(quote: Quote, fallbackLabel: string) {
   const sections =
     (
       quote as unknown as {
@@ -107,7 +116,7 @@ function getCostSections(quote: Quote) {
 
       return {
         id: section.id,
-        label: section.title || section.name || "Área",
+        label: section.title || section.name || fallbackLabel,
         total:
           section.total !== null && section.total !== undefined
             ? toNumber(section.total)
@@ -153,27 +162,41 @@ function addDays(date: Date, days: number) {
   return nextDate;
 }
 
-function formatMonth(date: Date) {
-  const month = new Intl.DateTimeFormat("es-ES", {
+function formatMonth(date: Date, language: "es" | "en") {
+  const locale = language === "en" ? "en-GB" : "es-ES";
+
+  const month = new Intl.DateTimeFormat(locale, {
     month: "long",
   }).format(date);
 
   return month.charAt(0).toUpperCase() + month.slice(1);
 }
 
-function CalendarSideDay({ date }: { date: Date }) {
+function CalendarSideDay({
+  date,
+  language,
+}: {
+  date: Date;
+  language: "es" | "en";
+}) {
   return (
     <div className="flex h-44 w-full flex-col items-center justify-center rounded-xl bg-prop-background/20 text-center text-prop-background/55">
       <p className="font-display text-7xl leading-none">{date.getDate()}</p>
 
-      <p className="mt-6 whitespace-nowrap text-base">
-        {formatMonth(date)} {date.getFullYear()}
+      <p className="mt-6 whitespace-nowrap text-sm">
+        {formatMonth(date, language)} {date.getFullYear()}
       </p>
     </div>
   );
 }
 
-function CalendarMainDay({ date }: { date: Date }) {
+function CalendarMainDay({
+  date,
+  language,
+}: {
+  date: Date;
+  language: "es" | "en";
+}) {
   return (
     <div className="flex h-64 w-full flex-col items-center justify-center rounded-xl bg-prop-background text-center text-prop-text">
       <p className="font-display text-[118px] leading-[0.75]">
@@ -181,7 +204,7 @@ function CalendarMainDay({ date }: { date: Date }) {
       </p>
 
       <p className="mt-8 whitespace-nowrap text-lg">
-        {formatMonth(date)} {date.getFullYear()}
+        {formatMonth(date, language)} {date.getFullYear()}
       </p>
     </div>
   );
@@ -190,36 +213,35 @@ function CalendarMainDay({ date }: { date: Date }) {
 export default function ProposalSummary({ quote }: Props) {
   if (!quote.show_summary) return null;
 
+  const language = quote.language === "en" ? "en" : "es";
+  const t = getProposalTranslations(language);
+
   const timelineAreas = getTimelineAreas(quote);
-  const costSections = getCostSections(quote);
+  const costSections = getCostSections(quote, t.summary.area);
   const total = getProposalTotal(quote);
   const startDate = parseStartDate(quote.start_at);
   const paymentPercentages = getPaymentPercentages(costSections.length);
 
   return (
     <section className="px-10">
-      <div className="grid gap-4 md:grid-cols-3">
-        <div />
+      <div className="grid gap-4 md:grid-cols-2">
         <div />
 
-        <h2 className="font-display text-6xl font-bold">Resumen</h2>
-      </div>
-
-      <div className="mt-8 gap-4 grid md:grid-cols-3">
-        <div />
-        <div />
-        <p className="text-base leading-snug">
-          Si la propuesta se ajusta a vuestras necesidades y objetivos, os
-          indicamos las acciones necesarias para poner en marcha el proyecto y
-          comenzar a trabajar de forma coordinada desde el primer día.
-        </p>
+        <h2 className="font-display text-6xl font-bold">
+          {t.summary.title}
+        </h2>
       </div>
 
       <div className="mt-24 grid items-stretch gap-4 xl:grid-cols-3">
         <article className="flex flex-col justify-between gap-8 rounded-xl rounded-tl-[36px] border border-prop-text/60 p-10 xl:col-span-2">
           <div className="flex flex-1 flex-col justify-between gap-8">
             <h3 className="font-display text-3xl font-bold">
-              {getDurationLabel(quote)}
+              {getDurationLabel(
+                quote,
+                language,
+                t.summary.week,
+                t.summary.weeks,
+              )}
             </h3>
 
             <div className="flex flex-1 flex-col justify-center gap-3 overflow-hidden">
@@ -257,14 +279,12 @@ export default function ProposalSummary({ quote }: Props) {
           </div>
 
           <div className="max-w-2xl">
-            <h4 className="text-base font-bold">Duración</h4>
+            <h4 className="text-base font-bold">
+              {t.summary.duration}
+            </h4>
 
-            <p className="mt-3 text-base leading-snug text-prop-text/65">
-              Nuestro compromiso es cumplir los plazos indicados siempre que el
-              proyecto avance con normalidad, contando con las validaciones,
-              materiales e información necesarios en los tiempos acordados. De
-              este modo, garantizamos un desarrollo eficiente sin comprometer la
-              calidad ni la consistencia del resultado final.
+            <p className="mt-3 text-sm leading-snug text-prop-text/65">
+              {t.summary.durationDescription}
             </p>
           </div>
         </article>
@@ -274,34 +294,40 @@ export default function ProposalSummary({ quote }: Props) {
             {startDate ? (
               <div className="flex w-full items-center justify-center gap-3">
                 <div className="w-[40%] shrink-0">
-                  <CalendarSideDay date={addDays(startDate, -1)} />
+                  <CalendarSideDay
+                    date={addDays(startDate, -1)}
+                    language={language}
+                  />
                 </div>
 
                 <div className="z-10 w-[50%] shrink-0">
-                  <CalendarMainDay date={startDate} />
+                  <CalendarMainDay
+                    date={startDate}
+                    language={language}
+                  />
                 </div>
 
                 <div className="w-[40%] shrink-0">
-                  <CalendarSideDay date={addDays(startDate, 1)} />
+                  <CalendarSideDay
+                    date={addDays(startDate, 1)}
+                    language={language}
+                  />
                 </div>
               </div>
             ) : (
               <p className="mx-auto text-lg text-prop-background/60">
-                Fecha pendiente
+                {t.summary.pendingDate}
               </p>
             )}
           </div>
 
           <div className="p-10 pt-0">
-            <h4 className="text-base font-bold">Fecha de inicio</h4>
+            <h4 className="text-base font-bold">
+              {t.summary.startDate}
+            </h4>
 
-            <p className="mt-3 text-base leading-snug text-prop-background/65">
-              Calculada teniendo en cuenta la planificación y carga de trabajo
-              actual del estudio. Para poder garantizar esta disponibilidad y
-              reservar los recursos necesarios para el proyecto, la presente
-              propuesta deberá ser aceptada en un plazo máximo de 17 días desde
-              su emisión. Transcurrido este periodo, la fecha de inicio podrá
-              verse modificada en función de la agenda y los proyectos en curso.
+            <p className="mt-3 text-sm leading-snug text-prop-background/65">
+              {t.summary.startDateDescription}
             </p>
           </div>
         </article>
@@ -322,7 +348,9 @@ export default function ProposalSummary({ quote }: Props) {
             ))}
 
             <div className="flex min-h-16 items-center justify-between rounded-md bg-prop-background px-4 text-prop-text">
-              <span className="text-xs uppercase">Total proyecto</span>
+              <span className="text-xs uppercase">
+                {t.summary.projectTotal}
+              </span>
 
               <span className="font-display text-3xl">
                 {formatPrice(total)}
@@ -331,15 +359,12 @@ export default function ProposalSummary({ quote }: Props) {
           </div>
 
           <div>
-            <h4 className="text-base font-bold">Total</h4>
+            <h4 className="text-base font-bold">
+              {t.summary.total}
+            </h4>
 
-            <p className="mt-3 text-base leading-snug text-prop-background/65">
-              La inversión total refleja el alcance completo de los trabajos
-              descritos en esta propuesta, incluyendo las fases, entregables y
-              recursos necesarios para su correcta ejecución. El presupuesto ha
-              sido calculado de forma individual para cada partida, permitiendo
-              comprender con claridad el valor aportado en cada etapa del
-              proyecto y facilitando una planificación ordenada de la inversión.
+            <p className="mt-3 text-sm leading-snug text-prop-background/65">
+              {t.summary.totalDescription}
             </p>
           </div>
         </article>
@@ -355,7 +380,9 @@ export default function ProposalSummary({ quote }: Props) {
             >
               <p className="font-display text-6xl leading-none">50%</p>
 
-              <p className="text-base">Para arrancar el proyecto</p>
+              <p className="text-base">
+                {t.summary.projectStart}
+              </p>
             </div>
 
             <div
@@ -376,8 +403,8 @@ export default function ProposalSummary({ quote }: Props) {
                     {paymentPercentages[index]}%
                   </span>
 
-                  <span className="text-right text-base text-prop-text/70">
-                    Al validar {section.label.toLowerCase()}
+                  <span className="text-right text-sm text-prop-text/70">
+                    {t.summary.validate} {section.label.toLowerCase()}
                   </span>
                 </div>
               ))}
@@ -385,15 +412,12 @@ export default function ProposalSummary({ quote }: Props) {
           </div>
 
           <div className="max-w-3xl">
-            <h4 className="text-base font-bold">División de pagos</h4>
+            <h4 className="text-base font-bold">
+              {t.summary.paymentSplit}
+            </h4>
 
-            <p className="mt-3 text-base leading-snug text-prop-text/65">
-              Distribuidos en diferentes hitos de pago alineados con el avance
-              del proyecto. Este sistema permite garantizar el compromiso y la
-              implicación de ambas partes durante todo el proceso. Cada pago
-              está vinculado al inicio o finalización de una fase concreta,
-              asegurando una relación transparente y equilibrada a lo largo del
-              proyecto.
+            <p className="mt-3 text-sm leading-snug text-prop-text/65">
+              {t.summary.paymentDescription}
             </p>
           </div>
         </article>

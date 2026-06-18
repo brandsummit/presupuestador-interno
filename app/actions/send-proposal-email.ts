@@ -1,6 +1,7 @@
 "use server";
 
 import { Resend } from "resend";
+
 import { supabase } from "@/lib/supabase";
 import { proposalEmailTemplate } from "@/components/proposal/email/proposalEmailTemplate";
 import { proposalEmailText } from "@/components/proposal/email/proposalEmailText";
@@ -33,11 +34,12 @@ export async function sendProposalEmail({
     .from("quotes")
     .select(
       `
-      id,
-      title,
-      number,
-      clients(name)
-    `,
+        id,
+        title,
+        number,
+        language,
+        clients(name)
+      `,
     )
     .eq("id", quoteId)
     .single();
@@ -50,11 +52,19 @@ export async function sendProposalEmail({
   }
 
   const client = Array.isArray(quote.clients)
-  ? quote.clients[0]
-  : quote.clients;
+    ? quote.clients[0]
+    : quote.clients;
 
-const clientName = (client as { name?: string | null } | null)?.name || null;
-  const quoteTitle = quote.title || `Propuesta ${quote.number}`;
+  const clientName =
+    (client as { name?: string | null } | null)?.name || null;
+
+  const language = quote.language === "en" ? "en" : "es";
+
+  const quoteTitle =
+    quote.title ||
+    (language === "en"
+      ? `Proposal ${quote.number}`
+      : `Propuesta ${quote.number}`);
 
   const email = await resend.emails.send({
     from:
@@ -67,12 +77,14 @@ const clientName = (client as { name?: string | null } | null)?.name || null;
       quoteTitle,
       message,
       proposalUrl,
+      language,
     }),
     text: proposalEmailText({
       clientName,
       quoteTitle,
       message,
       proposalUrl,
+      language,
     }),
   });
 

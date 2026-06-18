@@ -19,7 +19,10 @@ type Props = {
   viewMode?: "full" | "simplified";
 };
 
-export default function ProposalLayout({ quote, viewMode = "full" }: Props) {
+export default function ProposalLayout({
+  quote,
+  viewMode = "full",
+}: Props) {
   const typedQuote = normalizeProposalQuote(quote);
 
   if (viewMode === "simplified") {
@@ -45,7 +48,7 @@ export default function ProposalLayout({ quote, viewMode = "full" }: Props) {
         <ProposalTimeline quote={typedQuote} />
         <ProposalSummary quote={typedQuote} />
         <ProposalActions quote={typedQuote} />
-        <ProposalFooter />
+        <ProposalFooter quote={typedQuote} />
       </div>
     </main>
   );

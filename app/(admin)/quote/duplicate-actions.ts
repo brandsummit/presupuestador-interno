@@ -3,6 +3,7 @@
 import { generateToken } from "@/lib/generate-token";
 import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { revalidatePath } from "next/cache";
 
 type DbRecord = Record<string, unknown>;
 
@@ -174,4 +175,24 @@ export async function deleteQuote(quoteId: string) {
   }
 
   redirect("/quotes");
+}
+
+export async function updateQuoteLanguage(
+  quoteId: string,
+  language: "es" | "en",
+) {
+  if (!["es", "en"].includes(language)) {
+    throw new Error("Invalid language");
+  }
+
+  const { error } = await supabase
+    .from("quotes")
+    .update({ language })
+    .eq("id", quoteId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/quote/${quoteId}`);
 }

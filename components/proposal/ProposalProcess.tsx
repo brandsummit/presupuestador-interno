@@ -1,5 +1,7 @@
 import { Quote } from "@/components/quote-editor/types";
 
+import { getProposalTranslations } from "./proposal-translations";
+
 type Props = {
   quote: Quote;
 };
@@ -50,20 +52,437 @@ type ProcessKey =
   | "gestion-redes"
   | "gestion-influencers";
 
+type ProcessTranslationKey =
+  | "idea"
+  | "consultoria"
+  | "posicionamiento"
+  | "identidadVerbal"
+  | "identidadVisual"
+  | "packaging"
+  | "interiorismo"
+  | "contenido"
+  | "digital"
+  | "universoMarca"
+  | "activacionGestion";
+
 type ProcessItem = {
-  label: string;
   keys: ProcessKey[];
 };
 
 type ProcessCardData = {
   id: string;
-  title: string;
-  description: string;
+  translationKey: ProcessTranslationKey;
   keys: ProcessKey[];
   items: ProcessItem[];
   column: number;
   row: number;
 };
+
+type ProcessCardCopy = {
+  title: string;
+  description: string;
+  items: string[];
+};
+
+type ProcessCopyMap = Record<ProcessTranslationKey, ProcessCardCopy>;
+
+const processCopies: Record<"es" | "en", ProcessCopyMap> = {
+  es: {
+    idea: {
+      title: "Idea o necesidad",
+      description:
+        "Identificamos juntos el reto, la oportunidad o la necesidad que da origen al proyecto.",
+      items: ["Contacto inicial"],
+    },
+    consultoria: {
+      title: "Consultoría",
+      description:
+        "Analizamos el contexto y definimos la dirección más adecuada para alcanzar objetivos.",
+      items: ["Brief inicial", "Workshop de marca"],
+    },
+    posicionamiento: {
+      title: "Posicionamiento",
+      description:
+        "Definimos el territorio que la marca quiere ocupar y cómo diferenciarse en su categoría.",
+      items: [
+        "Brandkey",
+        "Público objetivo",
+        "Territorio y personalidad",
+      ],
+    },
+    identidadVerbal: {
+      title: "Identidad verbal",
+      description:
+        "Definimos cómo habla la marca, qué dice y la forma en que se relaciona con su público.",
+      items: [
+        "Naming",
+        "Eslogan",
+        "Tono de voz",
+        "Registro de marca",
+      ],
+    },
+    identidadVisual: {
+      title: "Identidad visual",
+      description:
+        "Definimos el sistema gráfico que permite reconocer, diferenciar y expresar la marca.",
+      items: [
+        "Logo principal",
+        "Universo gráfico",
+        "Dirección de arte",
+        "Aplicación corporativa",
+      ],
+    },
+    packaging: {
+      title: "Packaging",
+      description:
+        "Diseñamos el envase, combinando estrategia, funcionalidad y diferenciación.",
+      items: [
+        "Concepto global",
+        "Diseño de familia",
+        "Arte final",
+      ],
+    },
+    interiorismo: {
+      title: "Interiorismo",
+      description:
+        "Diseñamos el espacio del local adaptado a las necesidades del proyecto.",
+      items: [
+        "Diseño de interiores",
+        "Búsqueda de mobiliario",
+      ],
+    },
+    contenido: {
+      title: "Contenido",
+      description:
+        "Creamos contenido para nutrir la marca.",
+      items: [
+        "Fotografía",
+        "Contenido escrito",
+        "Audiovisual",
+      ],
+    },
+    digital: {
+      title: "Digital",
+      description:
+        "Diseñamos y desarrollamos el entorno digital donde la marca se presenta, comunica y vende.",
+      items: [
+        "Web",
+        "Tienda online",
+        "Desarrollo",
+      ],
+    },
+    universoMarca: {
+      title: "Universo de marca",
+      description:
+        "Tenemos la marca definida a nivel estratégico, verbal y visual, lista para activarse.",
+      items: ["Revisión y cierre de fase"],
+    },
+    activacionGestion: {
+      title: "Activación y gestión",
+      description:
+        "Gestionamos el inicio y el manejo a largo plazo de la marca.",
+      items: [
+        "Activación de marca",
+        "Gestión de redes",
+        "Gestión de influencers",
+      ],
+    },
+  },
+
+  en: {
+    idea: {
+      title: "Idea or need",
+      description:
+        "Together, we identify the challenge, opportunity or need that gives rise to the project.",
+      items: ["Initial contact"],
+    },
+    consultoria: {
+      title: "Consultancy",
+      description:
+        "We analyse the context and define the most appropriate direction for achieving the objectives.",
+      items: [
+        "Initial brief",
+        "Brand workshop",
+      ],
+    },
+    posicionamiento: {
+      title: "Positioning",
+      description:
+        "We define the territory the brand should occupy and how it can differentiate itself within its category.",
+      items: [
+        "Brandkey",
+        "Target audience",
+        "Territory and personality",
+      ],
+    },
+    identidadVerbal: {
+      title: "Verbal identity",
+      description:
+        "We define how the brand speaks, what it says and how it connects with its audience.",
+      items: [
+        "Naming",
+        "Tagline",
+        "Tone of voice",
+        "Trademark registration",
+      ],
+    },
+    identidadVisual: {
+      title: "Visual identity",
+      description:
+        "We define the visual system that makes the brand recognisable, distinctive and expressive.",
+      items: [
+        "Primary logo",
+        "Visual universe",
+        "Art direction",
+        "Corporate applications",
+      ],
+    },
+    packaging: {
+      title: "Packaging",
+      description:
+        "We design the packaging by combining strategy, functionality and differentiation.",
+      items: [
+        "Global concept",
+        "Product range design",
+        "Final artwork",
+      ],
+    },
+    interiorismo: {
+      title: "Interior design",
+      description:
+        "We design the space according to the specific needs of the project.",
+      items: [
+        "Interior design",
+        "Furniture sourcing",
+      ],
+    },
+    contenido: {
+      title: "Content",
+      description:
+        "We create content to build and support the brand.",
+      items: [
+        "Photography",
+        "Written content",
+        "Audiovisual content",
+      ],
+    },
+    digital: {
+      title: "Digital",
+      description:
+        "We design and develop the digital environment where the brand presents itself, communicates and sells.",
+      items: [
+        "Website",
+        "Online store",
+        "Development",
+      ],
+    },
+    universoMarca: {
+      title: "Brand universe",
+      description:
+        "The brand is strategically, verbally and visually defined and ready to be activated.",
+      items: ["Phase review and completion"],
+    },
+    activacionGestion: {
+      title: "Activation and management",
+      description:
+        "We manage the brand launch and its long-term development.",
+      items: [
+        "Brand activation",
+        "Social media management",
+        "Influencer management",
+      ],
+    },
+  },
+};
+
+const processCards: ProcessCardData[] = [
+  {
+    id: "idea",
+    translationKey: "idea",
+    keys: ["idea"],
+    items: [
+      {
+        keys: ["contacto-inicial", "idea"],
+      },
+    ],
+    column: 3,
+    row: 1,
+  },
+  {
+    id: "consultoria",
+    translationKey: "consultoria",
+    keys: ["consultoria"],
+    items: [
+      {
+        keys: ["brief-inicial"],
+      },
+      {
+        keys: ["workshop-marca", "consultoria"],
+      },
+    ],
+    column: 1,
+    row: 2,
+  },
+  {
+    id: "posicionamiento",
+    translationKey: "posicionamiento",
+    keys: ["posicionamiento"],
+    items: [
+      {
+        keys: ["brandkey"],
+      },
+      {
+        keys: ["publico-objetivo"],
+      },
+      {
+        keys: ["territorio-personalidad"],
+      },
+    ],
+    column: 2,
+    row: 2,
+  },
+  {
+    id: "identidad-verbal",
+    translationKey: "identidadVerbal",
+    keys: ["identidad-verbal"],
+    items: [
+      {
+        keys: ["naming"],
+      },
+      {
+        keys: ["eslogan"],
+      },
+      {
+        keys: ["tono-voz"],
+      },
+      {
+        keys: ["registro-marca"],
+      },
+    ],
+    column: 3,
+    row: 3,
+  },
+  {
+    id: "identidad-visual",
+    translationKey: "identidadVisual",
+    keys: ["identidad-visual"],
+    items: [
+      {
+        keys: ["logo-principal"],
+      },
+      {
+        keys: ["universo-grafico", "redes"],
+      },
+      {
+        keys: ["direccion-arte"],
+      },
+      {
+        keys: ["aplicacion-corporativa", "corporativo"],
+      },
+    ],
+    column: 4,
+    row: 3,
+  },
+  {
+    id: "packaging",
+    translationKey: "packaging",
+    keys: ["packaging"],
+    items: [
+      {
+        keys: ["concepto-global", "packaging"],
+      },
+      {
+        keys: ["diseno-familia", "diseno-maestro"],
+      },
+      {
+        keys: ["arte-final", "aaff"],
+      },
+    ],
+    column: 1,
+    row: 4,
+  },
+  {
+    id: "interiorismo",
+    translationKey: "interiorismo",
+    keys: ["interiorismo"],
+    items: [
+      {
+        keys: ["diseno-interiores"],
+      },
+      {
+        keys: ["busqueda-mobiliario"],
+      },
+    ],
+    column: 2,
+    row: 4,
+  },
+  {
+    id: "contenido",
+    translationKey: "contenido",
+    keys: ["contenido"],
+    items: [
+      {
+        keys: ["fotografia"],
+      },
+      {
+        keys: ["contenido-escrito"],
+      },
+      {
+        keys: ["audiovisual"],
+      },
+    ],
+    column: 3,
+    row: 4,
+  },
+  {
+    id: "digital",
+    translationKey: "digital",
+    keys: ["digital"],
+    items: [
+      {
+        keys: ["web"],
+      },
+      {
+        keys: ["tienda-online"],
+      },
+      {
+        keys: ["desarrollo"],
+      },
+    ],
+    column: 4,
+    row: 4,
+  },
+  {
+    id: "universo-marca",
+    translationKey: "universoMarca",
+    keys: ["universo-marca"],
+    items: [
+      {
+        keys: ["revision-cierre-fase", "universo-marca"],
+      },
+    ],
+    column: 2,
+    row: 5,
+  },
+  {
+    id: "activacion-gestion",
+    translationKey: "activacionGestion",
+    keys: ["activacion-gestion"],
+    items: [
+      {
+        keys: ["activacion-marca", "activacion-gestion"],
+      },
+      {
+        keys: ["gestion-redes"],
+      },
+      {
+        keys: ["gestion-influencers"],
+      },
+    ],
+    column: 3,
+    row: 5,
+  },
+];
 
 function isAnyActive(quote: Quote, keys: ProcessKey[]) {
   return keys.some((key) =>
@@ -73,19 +492,26 @@ function isAnyActive(quote: Quote, keys: ProcessKey[]) {
   );
 }
 
-function isCardActive(quote: Quote, card: ProcessCardData) {
+function isCardActive(
+  quote: Quote,
+  card: ProcessCardData,
+) {
   return (
     isAnyActive(quote, card.keys) ||
-    card.items.some((item) => isAnyActive(quote, item.keys))
+    card.items.some((item) =>
+      isAnyActive(quote, item.keys),
+    )
   );
 }
 
 function ProcessCard({
   quote,
   card,
+  copy,
 }: {
   quote: Quote;
   card: ProcessCardData;
+  copy: ProcessCardCopy;
 }) {
   const cardActive = isCardActive(quote, card);
 
@@ -109,7 +535,7 @@ function ProcessCard({
       >
         <div>
           <h3 className="text-[clamp(15px,1.15vw,18px)] leading-none">
-            {card.title}
+            {copy.title}
           </h3>
 
           <p
@@ -122,17 +548,17 @@ function ProcessCard({
               }
             `}
           >
-            {card.description}
+            {copy.description}
           </p>
         </div>
 
         <div className="mt-auto space-y-2 pt-5">
-          {card.items.map((item) => {
+          {card.items.map((item, index) => {
             const active = isAnyActive(quote, item.keys);
 
             return (
               <div
-                key={item.label}
+                key={`${card.id}-${index}`}
                 className={`
                   flex min-h-[clamp(32px,2.5vw,40px)] items-center
                   justify-between gap-3 rounded-md border
@@ -147,7 +573,9 @@ function ProcessCard({
                   }
                 `}
               >
-                <span className="min-w-0">{item.label}</span>
+                <span className="min-w-0">
+                  {copy.items[index] || ""}
+                </span>
 
                 <span
                   className={`
@@ -173,273 +601,84 @@ function ProcessCard({
   );
 }
 
-const processCards: ProcessCardData[] = [
-  {
-    id: "idea",
-    title: "Idea o necesidad",
-    description:
-      "Identificamos juntos el reto, la oportunidad o la necesidad que da origen al proyecto.",
-    keys: ["idea"],
-    items: [
-      {
-        label: "Contacto inicial",
-        keys: ["contacto-inicial", "idea"],
-      },
-    ],
-    column: 3,
-    row: 1,
-  },
-  {
-    id: "consultoria",
-    title: "Consultoría",
-    description:
-      "Analizamos el contexto y definimos la dirección más adecuada para alcanzar objetivos.",
-    keys: ["consultoria"],
-    items: [
-      {
-        label: "Brief inicial",
-        keys: ["brief-inicial"],
-      },
-      {
-        label: "Workshop de marca",
-        keys: ["workshop-marca", "consultoria"],
-      },
-    ],
-    column: 1,
-    row: 2,
-  },
-  {
-    id: "posicionamiento",
-    title: "Posicionamiento",
-    description:
-      "Definimos el territorio que la marca quiere ocupar y cómo diferenciarse en su categoría.",
-    keys: ["posicionamiento"],
-    items: [
-      {
-        label: "Brandkey",
-        keys: ["brandkey"],
-      },
-      {
-        label: "Público objetivo",
-        keys: ["publico-objetivo"],
-      },
-      {
-        label: "Territorio y personalidad",
-        keys: ["territorio-personalidad"],
-      },
-    ],
-    column: 2,
-    row: 2,
-  },
-  {
-    id: "identidad-verbal",
-    title: "Identidad verbal",
-    description:
-      "Definimos cómo habla la marca, qué dice y la forma en que se relaciona con su público.",
-    keys: ["identidad-verbal"],
-    items: [
-      {
-        label: "Naming",
-        keys: ["naming"],
-      },
-      {
-        label: "Eslogan",
-        keys: ["eslogan"],
-      },
-      {
-        label: "Tono de voz",
-        keys: ["tono-voz"],
-      },
-      {
-        label: "Registro de marca",
-        keys: ["registro-marca"],
-      },
-    ],
-    column: 3,
-    row: 3,
-  },
-  {
-    id: "identidad-visual",
-    title: "Identidad visual",
-    description:
-      "Definimos el sistema gráfico que permite reconocer, diferenciar y expresar la marca.",
-    keys: ["identidad-visual"],
-    items: [
-      {
-        label: "Logo principal",
-        keys: ["logo-principal"],
-      },
-      {
-        label: "Universo gráfico",
-        keys: ["universo-grafico", "redes"],
-      },
-      {
-        label: "Dirección de arte",
-        keys: ["direccion-arte"],
-      },
-      {
-        label: "Aplicación corporativa",
-        keys: ["aplicacion-corporativa", "corporativo"],
-      },
-    ],
-    column: 4,
-    row: 3,
-  },
-  {
-    id: "packaging",
-    title: "Packaging",
-    description:
-      "Diseñamos el envase, combinando estrategia, funcionalidad y diferenciación.",
-    keys: ["packaging"],
-    items: [
-      {
-        label: "Concepto global",
-        keys: ["concepto-global", "packaging"],
-      },
-      {
-        label: "Diseño de familia",
-        keys: ["diseno-familia", "diseno-maestro"],
-      },
-      {
-        label: "Arte final",
-        keys: ["arte-final", "aaff"],
-      },
-    ],
-    column: 1,
-    row: 4,
-  },
-  {
-    id: "interiorismo",
-    title: "Interiorismo",
-    description:
-      "Diseñamos el espacio del local adaptado a las necesidades del proyecto.",
-    keys: ["interiorismo"],
-    items: [
-      {
-        label: "Diseño de interiores",
-        keys: ["diseno-interiores"],
-      },
-      {
-        label: "Búsqueda de mobiliario",
-        keys: ["busqueda-mobiliario"],
-      },
-    ],
-    column: 2,
-    row: 4,
-  },
-  {
-    id: "contenido",
-    title: "Contenido",
-    description: "Creamos contenido para nutrir la marca.",
-    keys: ["contenido"],
-    items: [
-      {
-        label: "Fotografía",
-        keys: ["fotografia"],
-      },
-      {
-        label: "Contenido escrito",
-        keys: ["contenido-escrito"],
-      },
-      {
-        label: "Audiovisual",
-        keys: ["audiovisual"],
-      },
-    ],
-    column: 3,
-    row: 4,
-  },
-  {
-    id: "digital",
-    title: "Digital",
-    description:
-      "Diseñamos y desarrollamos el entorno digital donde la marca se presenta, comunica y vende.",
-    keys: ["digital"],
-    items: [
-      {
-        label: "Web",
-        keys: ["web"],
-      },
-      {
-        label: "Tienda online",
-        keys: ["tienda-online"],
-      },
-      {
-        label: "Desarrollo",
-        keys: ["desarrollo"],
-      },
-    ],
-    column: 4,
-    row: 4,
-  },
-  {
-    id: "universo-marca",
-    title: "Universo de marca",
-    description:
-      "Tenemos la marca definida a nivel estratégico, verbal y visual, lista para activarse.",
-    keys: ["universo-marca"],
-    items: [
-      {
-        label: "Revisión y cierre de fase",
-        keys: ["revision-cierre-fase", "universo-marca"],
-      },
-    ],
-    column: 2,
-    row: 5,
-  },
-  {
-    id: "activacion-gestion",
-    title: "Activación y gestión",
-    description:
-      "Gestionamos el inicio y el manejo a largo plazo de la marca.",
-    keys: ["activacion-gestion"],
-    items: [
-      {
-        label: "Activación de marca",
-        keys: ["activacion-marca", "activacion-gestion"],
-      },
-      {
-        label: "Gestión de redes",
-        keys: ["gestion-redes"],
-      },
-      {
-        label: "Gestión de influencers",
-        keys: ["gestion-influencers"],
-      },
-    ],
-    column: 3,
-    row: 5,
-  },
-];
-
-function getCardActive(quote: Quote, id: string) {
-  const card = processCards.find((item) => item.id === id);
+function getCardActive(
+  quote: Quote,
+  id: string,
+) {
+  const card = processCards.find(
+    (item) => item.id === id,
+  );
 
   return card ? isCardActive(quote, card) : false;
 }
 
 function ProcessConnections({ quote }: Props) {
   const ideaActive = getCardActive(quote, "idea");
-  const consultoriaActive = getCardActive(quote, "consultoria");
-  const posicionamientoActive = getCardActive(quote, "posicionamiento");
-  const verbalActive = getCardActive(quote, "identidad-verbal");
-  const visualActive = getCardActive(quote, "identidad-visual");
-  const packagingActive = getCardActive(quote, "packaging");
-  const interiorismoActive = getCardActive(quote, "interiorismo");
-  const contenidoActive = getCardActive(quote, "contenido");
-  const digitalActive = getCardActive(quote, "digital");
-  const universoActive = getCardActive(quote, "universo-marca");
-  const activacionActive = getCardActive(quote, "activacion-gestion");
 
-  const estrategiaActive = consultoriaActive || posicionamientoActive;
-  const identidadActive = verbalActive || visualActive;
+  const consultoriaActive = getCardActive(
+    quote,
+    "consultoria",
+  );
+
+  const posicionamientoActive = getCardActive(
+    quote,
+    "posicionamiento",
+  );
+
+  const verbalActive = getCardActive(
+    quote,
+    "identidad-verbal",
+  );
+
+  const visualActive = getCardActive(
+    quote,
+    "identidad-visual",
+  );
+
+  const packagingActive = getCardActive(
+    quote,
+    "packaging",
+  );
+
+  const interiorismoActive = getCardActive(
+    quote,
+    "interiorismo",
+  );
+
+  const contenidoActive = getCardActive(
+    quote,
+    "contenido",
+  );
+
+  const digitalActive = getCardActive(
+    quote,
+    "digital",
+  );
+
+  const universoActive = getCardActive(
+    quote,
+    "universo-marca",
+  );
+
+  const activacionActive = getCardActive(
+    quote,
+    "activacion-gestion",
+  );
+
+  const estrategiaActive =
+    consultoriaActive || posicionamientoActive;
+
+  const identidadActive =
+    verbalActive || visualActive;
+
   const aplicacionesActive =
     packagingActive ||
     interiorismoActive ||
     contenidoActive ||
     digitalActive;
 
-  const opacity = (active: boolean) => (active ? 0.4 : 0.08);
+  const opacity = (active: boolean) =>
+    active ? 0.4 : 0.08;
 
   return (
     <svg
@@ -473,7 +712,9 @@ function ProcessConnections({ quote }: Props) {
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(estrategiaActive) }}
+          style={{
+            opacity: opacity(estrategiaActive),
+          }}
           d="
             M96 450
             C69.49 450 48 471.49 48 498
@@ -486,7 +727,9 @@ function ProcessConnections({ quote }: Props) {
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(identidadActive) }}
+          style={{
+            opacity: opacity(identidadActive),
+          }}
           d="
             M1704 970
             C1730.51 970 1752 991.49 1752 1018
@@ -499,7 +742,9 @@ function ProcessConnections({ quote }: Props) {
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(aplicacionesActive) }}
+          style={{
+            opacity: opacity(aplicacionesActive),
+          }}
           d="
             M96 1490
             C69.49 1490 48 1511.49 48 1538
@@ -512,7 +757,9 @@ function ProcessConnections({ quote }: Props) {
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(activacionActive) }}
+          style={{
+            opacity: opacity(activacionActive),
+          }}
           d="
             M701 2010
             H1047
@@ -523,63 +770,81 @@ function ProcessConnections({ quote }: Props) {
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(consultoriaActive) }}
+          style={{
+            opacity: opacity(consultoriaActive),
+          }}
           d="M303 450 V540"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(posicionamientoActive) }}
+          style={{
+            opacity: opacity(posicionamientoActive),
+          }}
           d="M701 450 V540"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(verbalActive) }}
+          style={{
+            opacity: opacity(verbalActive),
+          }}
           d="M1099 970 V1060"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(visualActive) }}
+          style={{
+            opacity: opacity(visualActive),
+          }}
           d="M1497 970 V1060"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(packagingActive) }}
+          style={{
+            opacity: opacity(packagingActive),
+          }}
           d="M303 1490 V1580"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(interiorismoActive) }}
+          style={{
+            opacity: opacity(interiorismoActive),
+          }}
           d="M701 1490 V1580"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(contenidoActive) }}
+          style={{
+            opacity: opacity(contenidoActive),
+          }}
           d="M1099 1490 V1580"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(digitalActive) }}
+          style={{
+            opacity: opacity(digitalActive),
+          }}
           d="M1497 1490 V1580"
         />
 
         <path
           vectorEffect="non-scaling-stroke"
           className="transition-opacity duration-300"
-          style={{ opacity: opacity(universoActive) }}
+          style={{
+            opacity: opacity(universoActive),
+          }}
           d="M701 2010 V2080"
         />
       </g>
@@ -587,8 +852,16 @@ function ProcessConnections({ quote }: Props) {
   );
 }
 
-export default function ProposalProcess({ quote }: Props) {
+export default function ProposalProcess({
+  quote,
+}: Props) {
   if (!quote.show_process) return null;
+
+  const language =
+    quote.language === "en" ? "en" : "es";
+
+  const t = getProposalTranslations(language);
+  const copy = processCopies[language];
 
   return (
     <section className="overflow-hidden px-10">
@@ -596,11 +869,13 @@ export default function ProposalProcess({ quote }: Props) {
         <div />
 
         <div>
-          <h2 className="font-display text-6xl font-bold">Proceso</h2>
+          <h2 className="font-display text-6xl font-bold">
+            {t.process.title}
+          </h2>
 
-          <div className="mt-8">
-            <p className="text-base leading-snug">
-              Más allá de los entregables, entendemos cada proyecto como un proceso de toma de decisiones. Nuestro objetivo es aportar claridad en cada etapa, asegurando que las decisiones estratégicas, creativas y técnicas respondan a una misma dirección. Para ello, estructuramos el trabajo en diferentes fases que nos permiten avanzar de forma ordenada, validar cada paso y construir soluciones coherentes, sólidas y preparadas para evolucionar junto al negocio.
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
+            <p className="text-sm leading-snug">
+              {t.process.intro}
             </p>
           </div>
         </div>
@@ -632,7 +907,11 @@ export default function ProposalProcess({ quote }: Props) {
                 gridRow: card.row * 2 - 1,
               }}
             >
-              <ProcessCard quote={quote} card={card} />
+              <ProcessCard
+                quote={quote}
+                card={card}
+                copy={copy[card.translationKey]}
+              />
             </div>
           ))}
         </div>
@@ -640,7 +919,12 @@ export default function ProposalProcess({ quote }: Props) {
 
       <div className="mt-20 grid gap-4 md:grid-cols-2 xl:hidden">
         {processCards.map((card) => (
-          <ProcessCard key={card.id} quote={quote} card={card} />
+          <ProcessCard
+            key={card.id}
+            quote={quote}
+            card={card}
+            copy={copy[card.translationKey]}
+          />
         ))}
       </div>
     </section>

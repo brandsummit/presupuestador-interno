@@ -103,4 +103,6 @@ export type Quote = {
   timeline_areas?: TimelineArea[];
 
   quote_process_items?: QuoteProcessItem[];
+
+  language: "es" | "en";
 };
