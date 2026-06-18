@@ -98,6 +98,7 @@ export type Quote = {
   show_costs?: boolean | null;
   show_timeline?: boolean | null;
   show_summary?: boolean | null;
+  show_actions?: boolean | null;
 
   timeline_areas?: TimelineArea[];
 

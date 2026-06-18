@@ -163,7 +163,7 @@ function formatMonth(date: Date) {
 
 function CalendarSideDay({ date }: { date: Date }) {
   return (
-    <div className="flex h-44 w-44 shrink-0 flex-col items-center justify-center rounded-xl bg-prop-background/20 text-center text-prop-background/55">
+    <div className="flex h-44 w-full flex-col items-center justify-center rounded-xl bg-prop-background/20 text-center text-prop-background/55">
       <p className="font-display text-7xl leading-none">{date.getDate()}</p>
 
       <p className="mt-6 whitespace-nowrap text-sm">
@@ -175,7 +175,7 @@ function CalendarSideDay({ date }: { date: Date }) {
 
 function CalendarMainDay({ date }: { date: Date }) {
   return (
-    <div className="relative z-10 flex h-64 w-56 shrink-0 flex-col items-center justify-center rounded-xl bg-prop-background text-center text-prop-text">
+    <div className="flex h-64 w-full flex-col items-center justify-center rounded-xl bg-prop-background text-center text-prop-text">
       <p className="font-display text-[118px] leading-[0.75]">
         {date.getDate()}
       </p>
@@ -257,21 +257,23 @@ export default function ProposalSummary({ quote }: Props) {
         </article>
 
         <article className="flex flex-col justify-between gap-8 overflow-hidden rounded-xl rounded-tr-[36px] bg-prop-text text-prop-background">
-          <div className="relative flex min-h-[320px] flex-1 items-center justify-center overflow-hidden py-10">
+          <div className="flex min-h-[320px] flex-1 items-center overflow-hidden py-10">
             {startDate ? (
-              <>
-                <div className="absolute left-0 top-1/2 -translate-x-[42%] -translate-y-1/2">
+              <div className="flex w-full items-center justify-center gap-3">
+                <div className="w-[40%] shrink-0">
                   <CalendarSideDay date={addDays(startDate, -1)} />
                 </div>
 
-                <CalendarMainDay date={startDate} />
+                <div className="z-10 w-[50%] shrink-0">
+                  <CalendarMainDay date={startDate} />
+                </div>
 
-                <div className="absolute right-0 top-1/2 translate-x-[42%] -translate-y-1/2">
+                <div className="w-[40%] shrink-0">
                   <CalendarSideDay date={addDays(startDate, 1)} />
                 </div>
-              </>
+              </div>
             ) : (
-              <p className="text-lg text-prop-background/60">
+              <p className="mx-auto text-lg text-prop-background/60">
                 Fecha pendiente
               </p>
             )}

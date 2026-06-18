@@ -10,6 +10,7 @@ import ProposalTimeline from "./ProposalTimeline";
 import ProposalFooter from "./ProposalFooter";
 import ProposalAdminToolbar from "./ProposalAdminToolbar";
 import ProposalSimplifiedLayout from "./ProposalSimplifiedLayout";
+import ProposalActions from "./ProposalActions";
 
 import { normalizeProposalQuote } from "./utils";
 
@@ -43,6 +44,7 @@ export default function ProposalLayout({ quote, viewMode = "full" }: Props) {
         <ProposalCosts quote={typedQuote} />
         <ProposalTimeline quote={typedQuote} />
         <ProposalSummary quote={typedQuote} />
+        <ProposalActions quote={typedQuote} />
         <ProposalFooter />
       </div>
     </main>

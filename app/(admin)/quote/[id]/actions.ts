@@ -9,7 +9,8 @@ type VisibilityField =
   | "show_process"
   | "show_costs"
   | "show_timeline"
-  | "show_summary";
+  | "show_summary"
+  | "show_actions";
 
 type EditableQuoteField =
   | "number"

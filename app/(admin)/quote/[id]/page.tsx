@@ -10,6 +10,7 @@ import CostsSection from "@/components/quote-editor/costs/CostsSection";
 import TimelineSection from "@/components/quote-editor/timeline/TimelineSection";
 import SummarySection from "@/components/quote-editor/SummarySection";
 import QuoteToolbar from "@/components/quote-editor/QuoteToolbar";
+import ActionsSection from "@/components/quote-editor/ActionsSection";
 
 import { Quote } from "@/components/quote-editor/types";
 import { getCostTotal } from "@/components/quote-editor/utils";
@@ -155,6 +156,22 @@ export default async function QuotePage({ params }: QuotePageProps) {
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_summary",
+            value,
+          );
+        }}
+      />
+
+      <ActionsSection
+        quote={typedQuote}
+        enabled={typedQuote.show_actions ?? true}
+        onToggle={async (value) => {
+          "use server";
+
+          const { updateQuoteSectionVisibility } = await import("./actions");
+
+          await updateQuoteSectionVisibility(
+            typedQuote.id,
+            "show_actions",
             value,
           );
         }}
