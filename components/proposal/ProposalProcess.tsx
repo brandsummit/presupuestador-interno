@@ -73,6 +73,13 @@ function isAnyActive(quote: Quote, keys: ProcessKey[]) {
   );
 }
 
+function isCardActive(quote: Quote, card: ProcessCardData) {
+  return (
+    isAnyActive(quote, card.keys) ||
+    card.items.some((item) => isAnyActive(quote, item.keys))
+  );
+}
+
 function ProcessCard({
   quote,
   card,
@@ -80,62 +87,87 @@ function ProcessCard({
   quote: Quote;
   card: ProcessCardData;
 }) {
-  const cardActive =
-    isAnyActive(quote, card.keys) ||
-    card.items.some((item) => isAnyActive(quote, item.keys));
+  const cardActive = isCardActive(quote, card);
 
   return (
     <article
       className={`
-        flex h-full min-w-0 flex-col rounded-xl border
-        border-prop-text/40 bg-prop-background p-5
-        transition-opacity
-        ${cardActive ? "opacity-100" : "opacity-20"}
+        h-full min-h-0 min-w-0 rounded-xl border bg-prop-background
+        p-[clamp(12px,1.1vw,20px)] transition-colors
+        ${
+          cardActive
+            ? "border-prop-text/40"
+            : "border-prop-text/20"
+        }
       `}
     >
-      <div>
-        <h3 className="text-lg leading-none">{card.title}</h3>
+      <div
+        className={`
+          flex h-full min-h-0 flex-col transition-opacity
+          ${cardActive ? "opacity-100" : "opacity-25"}
+        `}
+      >
+        <div>
+          <h3 className="text-[clamp(15px,1.15vw,18px)] leading-none">
+            {card.title}
+          </h3>
 
-        <p className="mt-4 text-xs leading-snug text-prop-text/70">
-          {card.description}
-        </p>
-      </div>
+          <p
+            className={`
+              mt-4 text-[clamp(10px,0.75vw,12px)] leading-snug
+              ${
+                cardActive
+                  ? "text-prop-text/70"
+                  : "text-prop-text"
+              }
+            `}
+          >
+            {card.description}
+          </p>
+        </div>
 
-      <div className="mt-auto space-y-2 pt-8">
-        {card.items.map((item) => {
-          const active = isAnyActive(quote, item.keys);
+        <div className="mt-auto space-y-2 pt-5">
+          {card.items.map((item) => {
+            const active = isAnyActive(quote, item.keys);
 
-          return (
-            <div
-              key={item.label}
-              className={`
-                flex min-h-10 items-center justify-between gap-4
-                rounded-md border px-3 py-2 text-sm
-                ${
-                  active
-                    ? "border-prop-text/60 text-prop-text"
-                    : "border-prop-text/25 text-prop-text/40"
-                }
-              `}
-            >
-              <span>{item.label}</span>
-
-              <span
+            return (
+              <div
+                key={item.label}
                 className={`
-                  flex h-4 w-4 shrink-0 items-center justify-center
-                  rounded-full border text-[10px] leading-none
+                  flex min-h-[clamp(32px,2.5vw,40px)] items-center
+                  justify-between gap-3 rounded-md border
+                  px-[clamp(8px,0.8vw,12px)] py-1.5
+                  text-[clamp(11px,0.85vw,14px)]
                   ${
                     active
-                      ? "border-success bg-success text-prop-background"
-                      : "border-prop-text/40"
+                      ? "border-prop-text/60 text-prop-text"
+                      : cardActive
+                        ? "border-prop-text/25 text-prop-text/40"
+                        : "border-prop-text text-prop-text"
                   }
                 `}
               >
-                {active ? "✓" : ""}
-              </span>
-            </div>
-          );
-        })}
+                <span className="min-w-0">{item.label}</span>
+
+                <span
+                  className={`
+                    flex h-4 w-4 shrink-0 items-center justify-center
+                    rounded-full border text-[10px] leading-none
+                    ${
+                      active
+                        ? "border-success bg-success text-prop-background"
+                        : cardActive
+                          ? "border-prop-text/40"
+                          : "border-prop-text"
+                    }
+                  `}
+                >
+                  {active ? "✓" : ""}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </article>
   );
@@ -154,7 +186,7 @@ const processCards: ProcessCardData[] = [
         keys: ["contacto-inicial", "idea"],
       },
     ],
-    column: 4,
+    column: 3,
     row: 1,
   },
   {
@@ -173,7 +205,7 @@ const processCards: ProcessCardData[] = [
         keys: ["workshop-marca", "consultoria"],
       },
     ],
-    column: 2,
+    column: 1,
     row: 2,
   },
   {
@@ -196,7 +228,7 @@ const processCards: ProcessCardData[] = [
         keys: ["territorio-personalidad"],
       },
     ],
-    column: 3,
+    column: 2,
     row: 2,
   },
   {
@@ -223,7 +255,7 @@ const processCards: ProcessCardData[] = [
         keys: ["registro-marca"],
       },
     ],
-    column: 4,
+    column: 3,
     row: 3,
   },
   {
@@ -250,7 +282,7 @@ const processCards: ProcessCardData[] = [
         keys: ["aplicacion-corporativa", "corporativo"],
       },
     ],
-    column: 5,
+    column: 4,
     row: 3,
   },
   {
@@ -273,7 +305,7 @@ const processCards: ProcessCardData[] = [
         keys: ["arte-final", "aaff"],
       },
     ],
-    column: 2,
+    column: 1,
     row: 4,
   },
   {
@@ -292,7 +324,7 @@ const processCards: ProcessCardData[] = [
         keys: ["busqueda-mobiliario"],
       },
     ],
-    column: 3,
+    column: 2,
     row: 4,
   },
   {
@@ -314,7 +346,7 @@ const processCards: ProcessCardData[] = [
         keys: ["audiovisual"],
       },
     ],
-    column: 4,
+    column: 3,
     row: 4,
   },
   {
@@ -337,7 +369,7 @@ const processCards: ProcessCardData[] = [
         keys: ["desarrollo"],
       },
     ],
-    column: 5,
+    column: 4,
     row: 4,
   },
   {
@@ -352,7 +384,7 @@ const processCards: ProcessCardData[] = [
         keys: ["revision-cierre-fase", "universo-marca"],
       },
     ],
-    column: 3,
+    column: 2,
     row: 5,
   },
   {
@@ -375,18 +407,47 @@ const processCards: ProcessCardData[] = [
         keys: ["gestion-influencers"],
       },
     ],
-    column: 4,
+    column: 3,
     row: 5,
   },
 ];
 
-function ProcessConnections() {
+function getCardActive(quote: Quote, id: string) {
+  const card = processCards.find((item) => item.id === id);
+
+  return card ? isCardActive(quote, card) : false;
+}
+
+function ProcessConnections({ quote }: Props) {
+  const ideaActive = getCardActive(quote, "idea");
+  const consultoriaActive = getCardActive(quote, "consultoria");
+  const posicionamientoActive = getCardActive(quote, "posicionamiento");
+  const verbalActive = getCardActive(quote, "identidad-verbal");
+  const visualActive = getCardActive(quote, "identidad-visual");
+  const packagingActive = getCardActive(quote, "packaging");
+  const interiorismoActive = getCardActive(quote, "interiorismo");
+  const contenidoActive = getCardActive(quote, "contenido");
+  const digitalActive = getCardActive(quote, "digital");
+  const universoActive = getCardActive(quote, "universo-marca");
+  const activacionActive = getCardActive(quote, "activacion-gestion");
+
+  const estrategiaActive = consultoriaActive || posicionamientoActive;
+  const identidadActive = verbalActive || visualActive;
+  const aplicacionesActive =
+    packagingActive ||
+    interiorismoActive ||
+    contenidoActive ||
+    digitalActive;
+
+  const opacity = (active: boolean) => (active ? 0.4 : 0.08);
+
   return (
     <svg
-      viewBox="0 0 1800 2084"
+      viewBox="0 0 1800 2460"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 h-full w-full text-prop-text"
     >
       <g
@@ -394,134 +455,132 @@ function ProcessConnections() {
         strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity="0.4"
       >
-        {/* Idea → Estrategia */}
         <path
           vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(ideaActive) }}
           d="
-            M1290 170
-            H1696
-            C1728 170 1752 194 1752 226
-            V332
-            C1752 364 1728 388 1696 388
-            H88
-            C56 388 32 412 32 444
-            V768
-            C32 800 56 824 88 824
-            H1712
+            M1290 190
+            H1704
+            C1730.51 190 1752 211.49 1752 238
+            V402
+            C1752 428.51 1730.51 450 1704 450
+            H96
           "
         />
 
-        {/* Línea superior hacia estrategia */}
         <path
           vectorEffect="non-scaling-stroke"
-          d="M303 388 V436"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M701 388 V436"
-        />
-
-        {/* Salida de estrategia */}
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M303 776 V824"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M701 776 V824"
-        />
-
-        {/* Entrada hacia identidad */}
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1099 824 V872"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1497 824 V872"
-        />
-
-        {/* Línea única entre identidad y áreas */}
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M88 1260 H1712"
-        />
-
-        {/* Salida de identidad */}
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1099 1212 V1260"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1497 1212 V1260"
-        />
-
-        {/* Entrada hacia las cuatro áreas */}
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M303 1260 V1308"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M701 1260 V1308"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1099 1260 V1308"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1497 1260 V1308"
-        />
-
-        {/* Salida de las cuatro áreas */}
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M303 1648 V1696"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M701 1648 V1696"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1099 1648 V1696"
-        />
-
-        <path
-          vectorEffect="non-scaling-stroke"
-          d="M1497 1648 V1696"
-        />
-
-        {/* Cierre final hacia Universo y Activación */}
-        <path
-          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(estrategiaActive) }}
           d="
-            M303 1696
-            H1640
-            C1680 1696 1712 1728 1712 1768
-            V1842
-            C1712 1882 1680 1914 1640 1914
-            H1290
+            M96 450
+            C69.49 450 48 471.49 48 498
+            V922
+            C48 948.51 69.49 970 96 970
+            H1704
           "
         />
 
-        {/* Entrada a Universo de marca */}
         <path
           vectorEffect="non-scaling-stroke"
-          d="M701 1696 V1744"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(identidadActive) }}
+          d="
+            M1704 970
+            C1730.51 970 1752 991.49 1752 1018
+            V1442
+            C1752 1468.51 1730.51 1490 1704 1490
+            H96
+          "
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(aplicacionesActive) }}
+          d="
+            M96 1490
+            C69.49 1490 48 1511.49 48 1538
+            V1962
+            C48 1988.51 69.49 2010 96 2010
+            H701
+          "
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(activacionActive) }}
+          d="
+            M701 2010
+            H1047
+            Q1099 2010 1099 2080
+          "
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(consultoriaActive) }}
+          d="M303 450 V540"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(posicionamientoActive) }}
+          d="M701 450 V540"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(verbalActive) }}
+          d="M1099 970 V1060"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(visualActive) }}
+          d="M1497 970 V1060"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(packagingActive) }}
+          d="M303 1490 V1580"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(interiorismoActive) }}
+          d="M701 1490 V1580"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(contenidoActive) }}
+          d="M1099 1490 V1580"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(digitalActive) }}
+          d="M1497 1490 V1580"
+        />
+
+        <path
+          vectorEffect="non-scaling-stroke"
+          className="transition-opacity duration-300"
+          style={{ opacity: opacity(universoActive) }}
+          d="M701 2010 V2080"
         />
       </g>
     </svg>
@@ -532,7 +591,7 @@ export default function ProposalProcess({ quote }: Props) {
   if (!quote.show_process) return null;
 
   return (
-    <section className="px-10">
+    <section className="overflow-hidden px-10">
       <div className="grid gap-4 md:grid-cols-2">
         <div />
 
@@ -548,24 +607,30 @@ export default function ProposalProcess({ quote }: Props) {
         </div>
       </div>
 
-      <div className="relative mx-auto mt-24 hidden w-full max-w-[1800px] lg:block">
-        <ProcessConnections />
+      <div
+        className="relative mx-auto mt-24 hidden w-full max-w-[1800px] xl:block"
+        style={{
+          aspectRatio: "1800 / 2460",
+        }}
+      >
+        <ProcessConnections quote={quote} />
 
         <div
-          className="relative z-10 grid gap-x-4 gap-y-24"
+          className="absolute inset-0 z-10 grid"
           style={{
             gridTemplateColumns:
-              "96px repeat(4, minmax(0, 1fr)) 96px",
-            gridTemplateRows: "repeat(5, 21.25rem)",
+              "96fr 16fr 382fr 16fr 382fr 16fr 382fr 16fr 382fr 16fr 96fr",
+            gridTemplateRows:
+              "380fr 140fr 380fr 140fr 380fr 140fr 380fr 140fr 380fr",
           }}
         >
           {processCards.map((card) => (
             <div
               key={card.id}
-              className="min-w-0"
+              className="min-h-0 min-w-0"
               style={{
-                gridColumn: card.column,
-                gridRow: card.row,
+                gridColumn: card.column * 2 + 1,
+                gridRow: card.row * 2 - 1,
               }}
             >
               <ProcessCard quote={quote} card={card} />
@@ -574,7 +639,7 @@ export default function ProposalProcess({ quote }: Props) {
         </div>
       </div>
 
-      <div className="mt-20 grid gap-4 md:grid-cols-2 lg:hidden">
+      <div className="mt-20 grid gap-4 md:grid-cols-2 xl:hidden">
         {processCards.map((card) => (
           <ProcessCard key={card.id} quote={quote} card={card} />
         ))}

@@ -57,7 +57,7 @@ export default function ProposalCosts({ quote }: Props) {
                       </div>
 
                       {item.description && (
-                        <p className="mt-1 whitespace-pre-wrap text-base leading-snug text-text">{item.description}</p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm leading-snug text-text">{item.description}</p>
                       )}
                     </div>
                   ))}

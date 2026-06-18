@@ -5,21 +5,184 @@ type Props = {
   quote: Quote;
 };
 
-function SummaryItem({
-  label,
-  value,
-}: {
-  label: string;
-  value?: string | null;
-}) {
+type SummaryCostItem = {
+  id?: string | number;
+  visible?: boolean;
+  enabled?: boolean;
+  quantity?: number | string | null;
+  price?: number | string | null;
+  unit_price?: number | string | null;
+  total?: number | string | null;
+};
+
+type SummaryCostSection = {
+  id?: string | number;
+  title?: string | null;
+  name?: string | null;
+  visible?: boolean;
+  enabled?: boolean;
+  position?: number | null;
+  total?: number | string | null;
+  quote_items?: SummaryCostItem[] | null;
+};
+
+function toNumber(value: number | string | null | undefined) {
+  const number = Number(value);
+
+  return Number.isFinite(number) ? number : 0;
+}
+
+function getTimelineAreas(quote: Quote) {
+  return (
+    quote.timeline_areas
+      ?.filter((area) => area.visible !== false)
+      .map((area) => ({
+        ...area,
+        timeline_items:
+          area.timeline_items
+            ?.filter((item) => item.visible !== false)
+            .sort((a, b) => (a.position || 0) - (b.position || 0)) || [],
+      }))
+      .filter((area) => area.timeline_items.length > 0)
+      .sort((a, b) => (a.position || 0) - (b.position || 0)) || []
+  );
+}
+
+function getMaxWeek(quote: Quote) {
+  const areas = getTimelineAreas(quote);
+
+  return Math.max(
+    1,
+    ...areas.flatMap((area) =>
+      area.timeline_items.flatMap((item) => [
+        Number(item.start_week || 1),
+        Number(item.end_week || item.start_week || 1),
+      ]),
+    ),
+  );
+}
+
+function getDurationLabel(quote: Quote) {
+  const maxWeek = getMaxWeek(quote);
+
+  if (maxWeek <= 3) {
+    return `${maxWeek} ${maxWeek === 1 ? "semana" : "semanas"}`;
+  }
+
+  return `${maxWeek - 2} a ${maxWeek} semanas`;
+}
+
+function getCostSections(quote: Quote) {
+  const sections =
+    (
+      quote as unknown as {
+        quote_sections?: SummaryCostSection[];
+      }
+    ).quote_sections || [];
+
+  return sections
+    .filter(
+      (section) =>
+        section.visible !== false &&
+        section.enabled !== false &&
+        (section.title || section.name),
+    )
+    .sort((a, b) => (a.position || 0) - (b.position || 0))
+    .map((section) => {
+      const items =
+        section.quote_items?.filter(
+          (item) => item.visible !== false && item.enabled !== false,
+        ) || [];
+
+      const calculatedTotal = items.reduce((total, item) => {
+        if (item.total !== null && item.total !== undefined) {
+          return total + toNumber(item.total);
+        }
+
+        const price = toNumber(item.price ?? item.unit_price);
+        const quantity = Math.max(1, toNumber(item.quantity) || 1);
+
+        return total + price * quantity;
+      }, 0);
+
+      return {
+        id: section.id,
+        label: section.title || section.name || "Área",
+        total:
+          section.total !== null && section.total !== undefined
+            ? toNumber(section.total)
+            : calculatedTotal,
+      };
+    })
+    .filter((section) => section.total > 0);
+}
+
+function getPaymentPercentages(areaCount: number) {
+  if (areaCount <= 0) return [];
+
+  const remainingPercentage = 50;
+  const basePercentage = Math.floor(remainingPercentage / areaCount);
+  const remainder = remainingPercentage - basePercentage * areaCount;
+
+  return Array.from({ length: areaCount }, (_, index) =>
+    index < remainder ? basePercentage + 1 : basePercentage,
+  );
+}
+
+function parseStartDate(value?: string | null) {
   if (!value) return null;
 
+  const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch;
+
+    return new Date(Number(year), Number(month) - 1, Number(day), 12);
+  }
+
+  const parsedDate = new Date(value);
+
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
+function addDays(date: Date, days: number) {
+  const nextDate = new Date(date);
+
+  nextDate.setDate(nextDate.getDate() + days);
+
+  return nextDate;
+}
+
+function formatMonth(date: Date) {
+  const month = new Intl.DateTimeFormat("es-ES", {
+    month: "long",
+  }).format(date);
+
+  return month.charAt(0).toUpperCase() + month.slice(1);
+}
+
+function CalendarSideDay({ date }: { date: Date }) {
   return (
-    <div>
-      <p className="mb-5 text-sm font-bold uppercase text-text-muted">
-        {label}
+    <div className="flex h-44 w-44 shrink-0 flex-col items-center justify-center rounded-xl bg-prop-background/20 text-center text-prop-background/55">
+      <p className="font-display text-7xl leading-none">{date.getDate()}</p>
+
+      <p className="mt-6 whitespace-nowrap text-sm">
+        {formatMonth(date)} {date.getFullYear()}
       </p>
-      <p className="whitespace-pre-wrap text-2xl leading-tight">{value}</p>
+    </div>
+  );
+}
+
+function CalendarMainDay({ date }: { date: Date }) {
+  return (
+    <div className="relative z-10 flex h-64 w-56 shrink-0 flex-col items-center justify-center rounded-xl bg-prop-background text-center text-prop-text">
+      <p className="font-display text-[118px] leading-[0.75]">
+        {date.getDate()}
+      </p>
+
+      <p className="mt-8 whitespace-nowrap text-lg">
+        {formatMonth(date)} {date.getFullYear()}
+      </p>
     </div>
   );
 }
@@ -27,54 +190,187 @@ function SummaryItem({
 export default function ProposalSummary({ quote }: Props) {
   if (!quote.show_summary) return null;
 
+  const timelineAreas = getTimelineAreas(quote);
+  const costSections = getCostSections(quote);
   const total = getProposalTotal(quote);
+  const startDate = parseStartDate(quote.start_at);
+  const paymentPercentages = getPaymentPercentages(costSections.length);
 
   return (
-    <section className="flex min-h-screen flex-col p-6">
-      <div>
-        <h2 className="font-display text-3xl uppercase">06 - Resumen</h2>
+    <section className="px-10">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div />
+
+        <h2 className="font-display text-6xl font-bold">Resumen</h2>
       </div>
 
-      <div className="mt-40 flex flex-1 flex-col justify-between">
-        <div className="grid gap-6 md:grid-cols-4">
-          <SummaryItem label="Inicio" value={quote.start_at} />
-          <SummaryItem label="Duración" value={quote.duration} />
-          <SummaryItem label="Total" value={formatPrice(total)} />
-          <SummaryItem label="Pagos" value={quote.payment_terms} />
-        </div>
+      <div className="mt-24 grid items-stretch gap-4 xl:grid-cols-3">
+        <article className="flex flex-col justify-between gap-8 rounded-xl rounded-tl-[36px] border border-prop-text/60 p-10 xl:col-span-2">
+          <div className="flex flex-1 flex-col justify-between gap-8">
+            <h3 className="font-display text-3xl font-bold">
+              {getDurationLabel(quote)}
+            </h3>
 
-        <div className="grid gap-6 md:grid-cols-4">
-          {quote.next_steps && (
-            <div className="md:col-span-2">
-              <p className="mb-5 text-sm font-bold uppercase text-text-muted">
-                Próximos pasos
-              </p>
-              <p className="whitespace-pre-wrap text-2xl leading-tight">
-                {quote.next_steps}
-              </p>
-            </div>
-          )}
+            <div className="flex flex-1 flex-col justify-center gap-3 overflow-hidden">
+              {timelineAreas.map((area, index) => {
+                const width = Math.max(
+                  38,
+                  Math.min(58, 48 + timelineAreas.length * 2),
+                );
 
-          <div className="hidden md:block" />
+                const availableOffset =
+                  timelineAreas.length > 1
+                    ? Math.max(0, 100 - width) / (timelineAreas.length - 1)
+                    : 0;
 
-          <div>
-            <div className="mb-10">
-              <p className="font-display text-5xl leading-none">
-                Brandsummit
-              </p>
-              <p className="mt-2 text-sm uppercase tracking-[0.22em]">
-                Food Design Thinkers
-              </p>
-            </div>
+                return (
+                  <div
+                    key={area.id}
+                    className="relative flex h-14 items-center"
+                  >
+                    <div className="absolute inset-x-0 border-t-2 border-dotted border-prop-text/25" />
 
-            <div className="text-2xl leading-tight">
-              <p>David Baldoví</p>
-              <p>Strategy &amp; Management</p>
-              <p>david@brandsummit.es</p>
-              <p>677 485 946</p>
+                    <div
+                      className="relative z-10 flex h-14 items-center rounded-md bg-prop-text px-5 text-prop-background"
+                      style={{
+                        width: `${width}%`,
+                        marginLeft: `${index * availableOffset}%`,
+                      }}
+                    >
+                      <span className="text-base">{area.title}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
+
+          <div className="max-w-2xl">
+            <h4 className="text-base font-bold">Duración</h4>
+
+            <p className="mt-3 text-sm leading-snug text-prop-text/65">
+              Nos comprometemos con estos tiempos de trabajo siempre que el
+              proyecto avance sin bloqueos, retrasos o condicionantes externos
+              a Brandsummit.
+            </p>
+          </div>
+        </article>
+
+        <article className="flex flex-col justify-between gap-8 overflow-hidden rounded-xl rounded-tr-[36px] bg-prop-text text-prop-background">
+          <div className="relative flex min-h-[320px] flex-1 items-center justify-center overflow-hidden py-10">
+            {startDate ? (
+              <>
+                <div className="absolute left-0 top-1/2 -translate-x-[42%] -translate-y-1/2">
+                  <CalendarSideDay date={addDays(startDate, -1)} />
+                </div>
+
+                <CalendarMainDay date={startDate} />
+
+                <div className="absolute right-0 top-1/2 translate-x-[42%] -translate-y-1/2">
+                  <CalendarSideDay date={addDays(startDate, 1)} />
+                </div>
+              </>
+            ) : (
+              <p className="text-lg text-prop-background/60">
+                Fecha pendiente
+              </p>
+            )}
+          </div>
+
+          <div className="p-10 pt-0">
+            <h4 className="text-base font-bold">Fecha de inicio</h4>
+
+            <p className="mt-3 text-sm leading-snug text-prop-background/65">
+              Esta fecha se reserva según nuestra carga de trabajo actual y se
+              mantiene siempre que la contratación se formalice durante los
+              próximos 15 días.
+            </p>
+          </div>
+        </article>
+
+        <article className="flex flex-col justify-between gap-8 rounded-xl rounded-bl-[36px] bg-prop-text p-10 text-prop-background">
+          <div className="space-y-3">
+            {costSections.map((section) => (
+              <div
+                key={section.id || section.label}
+                className="flex min-h-16 items-center justify-between rounded-md bg-prop-background/20 px-4"
+              >
+                <span className="text-xs uppercase">{section.label}</span>
+
+                <span className="font-display text-3xl">
+                  {formatPrice(section.total)}
+                </span>
+              </div>
+            ))}
+
+            <div className="flex min-h-16 items-center justify-between rounded-md bg-prop-background px-4 text-prop-text">
+              <span className="text-xs uppercase">Total proyecto</span>
+
+              <span className="font-display text-3xl">
+                {formatPrice(total)}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-base font-bold">Total</h4>
+
+            <p className="mt-3 text-sm leading-snug text-prop-background/65">
+              La suma recoge todas las áreas, tareas y servicios incluidos en
+              esta propuesta.
+            </p>
+          </div>
+        </article>
+
+        <article className="flex flex-col justify-between gap-8 rounded-xl rounded-br-[36px] border border-prop-text/60 p-10 xl:col-span-2">
+          <div className="grid items-stretch gap-4 lg:grid-cols-2">
+            <div
+              className={`
+                flex h-full flex-col justify-between gap-8 rounded-xl
+                bg-prop-text p-6 text-prop-background
+                ${costSections.length <= 1 ? "min-h-64" : ""}
+              `}
+            >
+              <p className="font-display text-6xl leading-none">50%</p>
+
+              <p className="text-base">Para arrancar el proyecto</p>
+            </div>
+
+            <div
+              className="grid h-full gap-3"
+              style={{
+                gridTemplateRows: `repeat(${Math.max(
+                  costSections.length,
+                  1,
+                )}, minmax(82px, 1fr))`,
+              }}
+            >
+              {costSections.map((section, index) => (
+                <div
+                  key={section.id || section.label}
+                  className="flex h-full min-h-[82px] items-center justify-between gap-6 rounded-xl border border-prop-text/60 px-6"
+                >
+                  <span className="font-display text-4xl">
+                    {paymentPercentages[index]}%
+                  </span>
+
+                  <span className="text-right text-sm text-prop-text/70">
+                    Al validar {section.label.toLowerCase()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="max-w-3xl">
+            <h4 className="text-base font-bold">División de pagos</h4>
+
+            <p className="mt-3 text-sm leading-snug text-prop-text/65">
+              Los pagos se distribuyen por fases para garantizar el compromiso
+              de ambas partes y permitir un desarrollo ordenado del proyecto.
+            </p>
+          </div>
+        </article>
       </div>
     </section>
   );
