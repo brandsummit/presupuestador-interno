@@ -48,7 +48,7 @@ export default function AutosizeTextarea({
         bg-background-transparent
         px-3
         py-2
-        text-sm
+        text-base
         text-text
         outline-none
         placeholder:text-text-muted

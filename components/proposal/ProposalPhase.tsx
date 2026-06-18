@@ -30,10 +30,9 @@ export default function ProposalPhase({ quote }: Props) {
   return (
     <section className="px-10">
       <h2 className="font-display text-6xl font-bold">Fases</h2>
-      <div className="mt-16 gap-4 grid md:grid-cols-3">
-        <p className="text-sm leading-snug">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore.
+      <div className="mt-8 gap-4 grid md:grid-cols-3">
+        <p className="text-base leading-snug">
+          Toda marca atraviesa diferentes etapas a lo largo de su desarrollo. Aunque cada proyecto tiene necesidades y ritmos distintos, en Brandsummit entendemos la construcción de marca como un proceso continuo que va desde la definición de sus fundamentos hasta su activación y gestión en el tiempo. Para facilitar la comprensión del alcance del proyecto, estructuramos nuestro trabajo en tres grandes fases que abarcan el ciclo completo y necesidades de una marca. El alcance de esta propuesta trata de las fases activadas a continuación.
         </p>
       </div>
 
@@ -64,12 +63,12 @@ export default function ProposalPhase({ quote }: Props) {
               <div>
                 <h3 className="text-2xl leading-none">{phase.label}</h3>
 
-                <p className="mt-6 max-w-md text-sm leading-snug">
+                <p className="mt-6 max-w-md text-base leading-snug">
                   {phase.description}
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 text-sm">
+              <div className="flex items-center gap-3 text-base">
                 <span
                   className={`
                     h-3 w-3 rounded-full border

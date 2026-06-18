@@ -166,7 +166,7 @@ function CalendarSideDay({ date }: { date: Date }) {
     <div className="flex h-44 w-full flex-col items-center justify-center rounded-xl bg-prop-background/20 text-center text-prop-background/55">
       <p className="font-display text-7xl leading-none">{date.getDate()}</p>
 
-      <p className="mt-6 whitespace-nowrap text-sm">
+      <p className="mt-6 whitespace-nowrap text-base">
         {formatMonth(date)} {date.getFullYear()}
       </p>
     </div>
@@ -198,10 +198,21 @@ export default function ProposalSummary({ quote }: Props) {
 
   return (
     <section className="px-10">
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
+        <div />
         <div />
 
         <h2 className="font-display text-6xl font-bold">Resumen</h2>
+      </div>
+
+      <div className="mt-8 gap-4 grid md:grid-cols-3">
+        <div />
+        <div />
+        <p className="text-base leading-snug">
+          Si la propuesta se ajusta a vuestras necesidades y objetivos, os
+          indicamos las acciones necesarias para poner en marcha el proyecto y
+          comenzar a trabajar de forma coordinada desde el primer día.
+        </p>
       </div>
 
       <div className="mt-24 grid items-stretch gap-4 xl:grid-cols-3">
@@ -248,10 +259,12 @@ export default function ProposalSummary({ quote }: Props) {
           <div className="max-w-2xl">
             <h4 className="text-base font-bold">Duración</h4>
 
-            <p className="mt-3 text-sm leading-snug text-prop-text/65">
-              Nos comprometemos con estos tiempos de trabajo siempre que el
-              proyecto avance sin bloqueos, retrasos o condicionantes externos
-              a Brandsummit.
+            <p className="mt-3 text-base leading-snug text-prop-text/65">
+              Nuestro compromiso es cumplir los plazos indicados siempre que el
+              proyecto avance con normalidad, contando con las validaciones,
+              materiales e información necesarios en los tiempos acordados. De
+              este modo, garantizamos un desarrollo eficiente sin comprometer la
+              calidad ni la consistencia del resultado final.
             </p>
           </div>
         </article>
@@ -282,10 +295,13 @@ export default function ProposalSummary({ quote }: Props) {
           <div className="p-10 pt-0">
             <h4 className="text-base font-bold">Fecha de inicio</h4>
 
-            <p className="mt-3 text-sm leading-snug text-prop-background/65">
-              Esta fecha se reserva según nuestra carga de trabajo actual y se
-              mantiene siempre que la contratación se formalice durante los
-              próximos 15 días.
+            <p className="mt-3 text-base leading-snug text-prop-background/65">
+              Calculada teniendo en cuenta la planificación y carga de trabajo
+              actual del estudio. Para poder garantizar esta disponibilidad y
+              reservar los recursos necesarios para el proyecto, la presente
+              propuesta deberá ser aceptada en un plazo máximo de 17 días desde
+              su emisión. Transcurrido este periodo, la fecha de inicio podrá
+              verse modificada en función de la agenda y los proyectos en curso.
             </p>
           </div>
         </article>
@@ -317,9 +333,13 @@ export default function ProposalSummary({ quote }: Props) {
           <div>
             <h4 className="text-base font-bold">Total</h4>
 
-            <p className="mt-3 text-sm leading-snug text-prop-background/65">
-              La suma recoge todas las áreas, tareas y servicios incluidos en
-              esta propuesta.
+            <p className="mt-3 text-base leading-snug text-prop-background/65">
+              La inversión total refleja el alcance completo de los trabajos
+              descritos en esta propuesta, incluyendo las fases, entregables y
+              recursos necesarios para su correcta ejecución. El presupuesto ha
+              sido calculado de forma individual para cada partida, permitiendo
+              comprender con claridad el valor aportado en cada etapa del
+              proyecto y facilitando una planificación ordenada de la inversión.
             </p>
           </div>
         </article>
@@ -356,7 +376,7 @@ export default function ProposalSummary({ quote }: Props) {
                     {paymentPercentages[index]}%
                   </span>
 
-                  <span className="text-right text-sm text-prop-text/70">
+                  <span className="text-right text-base text-prop-text/70">
                     Al validar {section.label.toLowerCase()}
                   </span>
                 </div>
@@ -367,9 +387,13 @@ export default function ProposalSummary({ quote }: Props) {
           <div className="max-w-3xl">
             <h4 className="text-base font-bold">División de pagos</h4>
 
-            <p className="mt-3 text-sm leading-snug text-prop-text/65">
-              Los pagos se distribuyen por fases para garantizar el compromiso
-              de ambas partes y permitir un desarrollo ordenado del proyecto.
+            <p className="mt-3 text-base leading-snug text-prop-text/65">
+              Distribuidos en diferentes hitos de pago alineados con el avance
+              del proyecto. Este sistema permite garantizar el compromiso y la
+              implicación de ambas partes durante todo el proceso. Cada pago
+              está vinculado al inicio o finalización de una fase concreta,
+              asegurando una relación transparente y equilibrada a lo largo del
+              proyecto.
             </p>
           </div>
         </article>

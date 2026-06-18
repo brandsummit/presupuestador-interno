@@ -122,10 +122,9 @@ export default function ProposalTimeline({ quote }: Props) {
     <section className="">
       <h2 className="px-10 font-display text-6xl font-bold">Tiempos</h2>
 
-      <div className="px-10 mt-16 grid gap-4 md:grid-cols-3">
-        <p className="text-sm leading-snug">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore.
+      <div className="px-10 mt-8 grid gap-4 md:grid-cols-3">
+        <p className="text-base leading-snug">
+          Trabajamos bajo una metodología propia, llamada Do it clear, que estructura el proyecto en etapas definidas, con objetivos, entregables y tiempos específicos para cada una de ellas. Este enfoque, basado en procesos de ingeniería, nos permite avanzar de forma ordenada, reducir la incertidumbre y garantizar que cada decisión se apoya en el trabajo realizado previamente.
         </p>
       </div>
 
@@ -177,7 +176,7 @@ export default function ProposalTimeline({ quote }: Props) {
                     minHeight: `${areaHeight}px`,
                   }}
                 >
-                  <div className="pl-10 z-10 flex items-start gap-3 pl-0 pt-7 text-base text-text-muted">
+                  <div className="pl-10 z-10 flex items-start gap-3 pt-7 text-base text-text-muted">
                     <span
                       className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: colors.area }}
@@ -312,7 +311,7 @@ export default function ProposalTimeline({ quote }: Props) {
                         : ""}
                     </p>
 
-                    <p className="mt-1 text-sm">{item.title}</p>
+                    <p className="mt-1 text-base">{item.title}</p>
                   </div>
                 ))}
               </div>

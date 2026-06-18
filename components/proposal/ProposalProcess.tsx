@@ -598,10 +598,9 @@ export default function ProposalProcess({ quote }: Props) {
         <div>
           <h2 className="font-display text-6xl font-bold">Proceso</h2>
 
-          <div className="mt-16 grid gap-4 md:grid-cols-3">
-            <p className="text-sm leading-snug">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore.
+          <div className="mt-8">
+            <p className="text-base leading-snug">
+              Más allá de los entregables, entendemos cada proyecto como un proceso de toma de decisiones. Nuestro objetivo es aportar claridad en cada etapa, asegurando que las decisiones estratégicas, creativas y técnicas respondan a una misma dirección. Para ello, estructuramos el trabajo en diferentes fases que nos permiten avanzar de forma ordenada, validar cada paso y construir soluciones coherentes, sólidas y preparadas para evolucionar junto al negocio.
             </p>
           </div>
         </div>

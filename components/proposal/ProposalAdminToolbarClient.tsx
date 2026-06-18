@@ -152,7 +152,7 @@ export default function ProposalAdminToolbarClient({
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-background/80 px-6">
           <div className="w-full max-w-md rounded-2xl bg-background-lighter p-5 shadow-xl">
             <div className="mb-5 flex items-center justify-between">
-              <h3 className="text-sm font-bold uppercase text-text">
+              <h3 className="text-base font-bold uppercase text-text">
                 Send proposal
               </h3>
 
@@ -174,7 +174,7 @@ export default function ProposalAdminToolbarClient({
                   value={to}
                   onChange={(event) => setTo(event.target.value)}
                   placeholder="client@email.com"
-                  className="h-10 w-full rounded-lg border border-input-border bg-background px-3 text-sm text-text outline-none"
+                  className="h-10 w-full rounded-lg border border-input-border bg-background px-3 text-base text-text outline-none"
                 />
               </div>
 
@@ -185,7 +185,7 @@ export default function ProposalAdminToolbarClient({
                 <input
                   value={subject}
                   onChange={(event) => setSubject(event.target.value)}
-                  className="h-10 w-full rounded-lg border border-input-border bg-background px-3 text-sm text-text outline-none"
+                  className="h-10 w-full rounded-lg border border-input-border bg-background px-3 text-base text-text outline-none"
                 />
               </div>
 
@@ -197,7 +197,7 @@ export default function ProposalAdminToolbarClient({
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
                   rows={5}
-                  className="w-full resize-none rounded-lg border border-input-border bg-background px-3 py-3 text-sm text-text outline-none"
+                  className="w-full resize-none rounded-lg border border-input-border bg-background px-3 py-3 text-base text-text outline-none"
                 />
               </div>
 
@@ -207,7 +207,7 @@ export default function ProposalAdminToolbarClient({
                 type="button"
                 disabled={isPending || !to || !subject}
                 onClick={handleSend}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-success px-4 text-sm text-background hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-success px-4 text-base text-background hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send size={14} />
                 {isPending ? "Sending..." : "Send proposal"}

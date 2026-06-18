@@ -23,14 +23,14 @@ export default function ProposalSimplifiedLayout({ quote }: Props) {
         <section className="grid gap-16 md:grid-cols-4">
           <div className="md:col-span-2">
             <p className="font-display text-5xl leading-none">Brandsummit</p>
-            <p className="mt-3 text-sm uppercase tracking-[0.22em]">
+            <p className="mt-3 text-base uppercase tracking-[0.22em]">
               Food Design Thinkers
             </p>
           </div>
 
           <div />
 
-          <div className="text-sm leading-snug text-prop-text-muted">
+          <div className="text-base leading-snug text-prop-text-muted">
             <p>Propuesta {quote.number}</p>
             <p>{quote.title || "Untitled proposal"}</p>
             <p>{quote.clients?.name || "Cliente"}</p>

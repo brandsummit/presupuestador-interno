@@ -10,7 +10,7 @@ export default function Input({
   ...props
 }: Props) {
   const variants = {
-    default: "text-sm",
+    default: "text-base",
     quoteNumber: "font-display text-3xl font-bold leading-none",
     quoteTitle: "text-lg",
   };

@@ -9,8 +9,8 @@ export default function ProposalFooter() {
         <div>
           <h2 className="font-display text-6xl font-bold">Contacto</h2>
 
-          <div className="mt-16 grid gap-4 md:grid-cols-3">
-            <p className="text-sm leading-snug md:col-span-2">
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <p className="text-base leading-snug md:col-span-2">
               Estamos disponibles para resolver cualquier duda sobre esta
               propuesta y acompañarte durante los siguientes pasos del proyecto.
             </p>

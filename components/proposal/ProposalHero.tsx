@@ -21,7 +21,7 @@ export default function ProposalHero({ quote }: Props) {
       </div>
 
       <div className="mt-10 grid gap-4 md:grid-cols-4">
-        <div className="text-sm leading-snug">
+        <div className="text-base leading-snug">
           <p>Propuesta {quote.number}</p>
           <p>{quote.title || "Untitled proposal"}</p>
           <p>{quote.clients?.name || "Cliente"}</p>
@@ -29,13 +29,13 @@ export default function ProposalHero({ quote }: Props) {
 
         <div />
 
-        <p className="max-w-sm text-sm leading-snug">
+        <p className="max-w-sm text-base leading-snug">
           Brandsummit es un estudio especializado en la construcción, activación
           y gestión de marcas de alimentación y bebida, desde las áreas de
           branding, packaging, interior y digital.
         </p>
 
-        <p className="max-w-sm text-sm leading-snug">
+        <p className="max-w-sm text-base leading-snug">
           Un estudio con una metodología propia de trabajo que garantiza
           tiempos, estrategia y creatividad. Con una profunda toma de decisiones
           para dotar de coherencia y consistencia a las marcas.

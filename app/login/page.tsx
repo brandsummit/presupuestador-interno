@@ -28,13 +28,13 @@ export default async function LoginPage({ searchParams }: Props) {
       >
         <div className="mb-10">
           <h1 className="font-display text-2xl">Login</h1>
-          <p className="mt-2 text-sm text-text-muted">
+          <p className="mt-2 text-base text-text-muted">
             Acceso administrador
           </p>
         </div>
 
         {params.error && (
-          <p className="mb-6 rounded-lg border border-danger px-4 py-3 text-sm text-danger">
+          <p className="mb-6 rounded-lg border border-danger px-4 py-3 text-base text-danger">
             Email o contraseña incorrectos.
           </p>
         )}

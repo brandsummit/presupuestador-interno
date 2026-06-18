@@ -134,7 +134,7 @@ export default function TimelineSection({ quote, enabled, onToggle }: Props) {
           ) : (
             <div className="rounded-lg border border-dashed border-input-border p-6">
               <div className="flex min-h-36 items-center justify-center gap-8">
-                <p className="text-sm text-text-muted">No areas yet.</p>
+                <p className="text-base text-text-muted">No areas yet.</p>
 
                 <Button
                   type="button"

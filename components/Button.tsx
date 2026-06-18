@@ -27,7 +27,7 @@ export default function Button({
 
   return (
     <button
-      className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm ${variants[variant]}`}
+      className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-base ${variants[variant]}`}
     >
       {icon}
       {children}

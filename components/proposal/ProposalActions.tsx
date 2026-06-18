@@ -23,28 +23,28 @@ const cards: ActionCard[] = [
     number: "01",
     title: "Aceptar propuesta",
     description:
-      "Confirma que estás de acuerdo con la propuesta para que podamos dar el siguiente paso.",
+      "Confirmar la aceptación de la propuesta para reservar la fecha de inicio y activar la planificación del proyecto.",
   },
   {
     type: "action",
     number: "02",
     title: "Alta de cliente",
     description:
-      "Completa tus datos para que podamos preparar el contrato y dar de alta el proyecto.",
+      "Completar el alta de cliente y facilitar los datos necesarios para la correcta gestión administrativa y contractual del proyecto.",
   },
   {
     type: "information",
     number: "03",
     title: "Firma de contrato",
     description:
-      "Una vez recibamos tus datos, prepararemos el contrato y te lo enviaremos para su firma.",
+      "Firmar el acuerdo de colaboración para formalizar el alcance, las condiciones y el inicio del proyecto, según esta propuesta de trabajo.",
   },
   {
     type: "information",
     number: "04",
-    title: "Agendar brief inicial",
+    title: "Arranque de proyecto",
     description:
-      "Claudia Vera, responsable de planificación y gestión del proyecto, se pondrá en contacto contigo para agendar el brief inicial.",
+      "Agendar la sesión de brief inicial. Claudia Vera, responsable de planificación y gestión del proyecto, se pondrá en contacto para coordinar la reunión, día, hora y lugar.",
   },
 ];
 
@@ -95,6 +95,11 @@ export default function ProposalActions({ quote }: Props) {
         <h2 className="font-display text-6xl font-bold">
           Próximos pasos
         </h2>
+        <div className="mt-8 gap-4 grid md:grid-cols-2">
+          <p className="text-base leading-snug">
+            Si la propuesta se ajusta a vuestras necesidades y objetivos, os indicamos las acciones necesarias para poner en marcha el proyecto y comenzar a trabajar de forma coordinada desde el primer día.
+          </p>
+        </div>
 
         <div className="mt-24 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, index) => {
@@ -228,13 +233,13 @@ export default function ProposalActions({ quote }: Props) {
                   pondremos en contacto contigo cuanto antes.
                 </p>
 
-                <p className="mt-8 rounded-xl border border-prop-background/20 p-5 text-sm leading-snug text-prop-background/55">
+                <p className="mt-8 rounded-xl border border-prop-background/20 p-5 text-base leading-snug text-prop-background/55">
                   Esta confirmación no es vinculante y no sustituye la
                   posterior firma del contrato.
                 </p>
 
                 {error && (
-                  <p className="mt-6 text-sm text-danger">
+                  <p className="mt-6 text-base text-danger">
                     {error}
                   </p>
                 )}

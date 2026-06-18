@@ -38,7 +38,7 @@ export default function ProcessItemRow({
       type="button"
       disabled={disabled}
       onClick={() => handleChange(!checked)}
-      className={`flex gap-2 items-center justify-between text-left text-sm transition ${
+      className={`flex gap-2 items-center justify-between text-left text-base transition ${
         item.parent_key ? "ml-2" : "pt-3"
       } ${
         checked

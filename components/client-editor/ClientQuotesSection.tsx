@@ -21,7 +21,7 @@ export default function ClientQuotesSection({ quotes }: Props) {
           ))}
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-input-border p-8 text-center text-sm text-text-muted">
+        <div className="rounded-lg border border-dashed border-input-border p-8 text-center text-base text-text-muted">
           No hay presupuestos asociados.
         </div>
       )}

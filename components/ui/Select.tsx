@@ -22,7 +22,7 @@ export default function Select({
           px-4
           py-3
           pr-10
-          text-sm
+          text-base
           text-text
           outline-none
           disabled:cursor-not-allowed

@@ -33,7 +33,7 @@ export default function Button({
         rounded-lg
         px-3
         py-2
-        text-sm
+        text-base
         transition
         disabled:cursor-not-allowed
         disabled:opacity-50

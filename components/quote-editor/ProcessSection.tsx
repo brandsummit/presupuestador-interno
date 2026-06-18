@@ -13,7 +13,7 @@ export default function ProcessSection({ enabled, onToggle }: Props) {
       <SectionHeader title="Process" enabled={enabled} onToggle={onToggle} />
       <div className={!enabled ? "opacity-50 cursor-not-allowed" : ""}>
         <div className={!enabled ? "pointer-events-none" : ""}>
-          <p className="text-sm text-text-muted">
+          <p className="text-base text-text-muted">
             This section will be generated from a fixed structure in the code.
           </p>
         </div>

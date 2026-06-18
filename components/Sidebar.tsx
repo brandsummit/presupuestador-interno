@@ -10,7 +10,7 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   const linkBase =
-    'flex items-center gap-3 rounded-lg px-4 py-3 text-sm'
+    'flex items-center gap-3 rounded-lg px-4 py-3 text-base'
 
   const active =
     'bg-text text-background'
@@ -58,7 +58,7 @@ export default function Sidebar() {
       <form action={logout}>
         <button
           type="submit"
-          className="flex w-full items-center gap-3 rounded-lg bg-danger px-4 py-3 text-sm text-background hover:brightness-90 cursor-pointer"
+          className="flex w-full items-center gap-3 rounded-lg bg-danger px-4 py-3 text-base text-background hover:brightness-90 cursor-pointer"
         >
           <LogOut size={18} />
           Logout

@@ -21,7 +21,7 @@ export default function ActionsSection({
         onToggle={onToggle}
       />
 
-      <p className={enabled ? "text-sm text-text-muted" : "text-sm text-text-muted opacity-50"}>
+      <p className={enabled ? "text-base text-text-muted" : "text-base text-text-muted opacity-50"}>
         Nada que editar aquí. Este control solo sirve para mostrar u ocultar el
         módulo en la propuesta.
       </p>

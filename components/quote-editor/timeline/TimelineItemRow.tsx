@@ -134,7 +134,7 @@ export default function TimelineItemRow({
       <select
         value={type}
         disabled={!enabled}
-        className="rounded-lg border border-input-border bg-background px-3 text-sm"
+        className="rounded-lg border border-input-border bg-background px-3 text-base"
         onChange={(event) => setType(event.target.value)}
         onBlur={(event) => handleUpdateType(event.target.value)}
       >

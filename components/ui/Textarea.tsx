@@ -18,7 +18,7 @@ export default function Textarea({
         bg-background-light/30
         px-4
         py-3
-        text-sm
+        text-base
         text-text
         outline-none
         placeholder:text-text-muted

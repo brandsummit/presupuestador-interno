@@ -15,7 +15,7 @@ function SummaryItem({
 
   return (
     <div>
-      <p className="mb-5 text-sm font-bold uppercase text-prop-text-muted">
+      <p className="mb-5 text-base font-bold uppercase text-prop-text-muted">
         {label}
       </p>
       <p className="whitespace-pre-wrap text-2xl leading-tight">{value}</p>

@@ -17,7 +17,7 @@ export default function ProposalObjective({ quote }: Props) {
         <div>
           <h2 className="mb-8 font-display font-bold text-6xl">Planteamiento</h2>
 
-          <p className="max-w-3xl whitespace-pre-wrap text-sm leading-snug">
+          <p className="max-w-3xl whitespace-pre-wrap text-base leading-snug">
             {quote.objective}
           </p>
         </div>

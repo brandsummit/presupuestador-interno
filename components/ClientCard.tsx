@@ -33,7 +33,7 @@ export default function ClientCard({ client }: ClientCardProps) {
 
         <a
           href={`/client/${client.id}`}
-          className="flex items-center gap-2 rounded-lg border border-text bg-text px-2 py-1 text-sm text-background hover:border-text hover:bg-background-light hover:text-text"
+          className="flex items-center gap-2 rounded-lg border border-text bg-text px-2 py-1 text-base text-background hover:border-text hover:bg-background-light hover:text-text"
         >
           <Eye size={14} />
           View / Edit

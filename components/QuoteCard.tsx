@@ -89,7 +89,7 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
           <h3 className="text-3xl font-display font-bold leading-none">#{quote.number}</h3>
           <div>
             <p className="text-lg">{quote.title}</p>
-            <p className="text-sm">{quote.description}</p>
+            <p className="text-base">{quote.description}</p>
           </div>
         </div>
 

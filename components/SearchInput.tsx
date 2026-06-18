@@ -34,7 +34,7 @@ export default function SearchInput({ placeholder = "Search..." }: Props) {
         defaultValue={defaultValue}
         onChange={(event) => handleChange(event.target.value)}
         placeholder={placeholder}
-        className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
+        className="w-full bg-transparent text-base text-text outline-none placeholder:text-text-muted"
       />
     </div>
   );

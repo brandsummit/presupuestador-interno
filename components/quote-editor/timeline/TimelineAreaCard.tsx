@@ -189,7 +189,7 @@ export default function TimelineAreaCard({
           ) : (
             <div className="rounded-lg border border-dashed border-input-border p-6">
               <div className="flex min-h-24 items-center justify-center gap-8">
-                <p className="text-sm text-text-muted">
+                <p className="text-base text-text-muted">
                   No timeline items yet.
                 </p>
 
