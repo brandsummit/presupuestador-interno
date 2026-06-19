@@ -237,7 +237,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       description:
         "We define the visual system that makes the brand recognisable, distinctive and expressive.",
       items: [
-        "logo and graphic universe",
+        "Logo and graphic universe",
         "Social media applications",
         "Art direction",
         "Corporate applications",
