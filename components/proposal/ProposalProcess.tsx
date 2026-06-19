@@ -37,6 +37,8 @@ type ProcessKey =
   | "interiorismo"
   | "diseno-interiores"
   | "busqueda-mobiliario"
+  | "senaletica"
+  | "aplicacion-marca"
   | "contenido"
   | "fotografia"
   | "contenido-escrito"
@@ -149,6 +151,8 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       items: [
         "Diseño de interiores",
         "Búsqueda de mobiliario",
+    "Señalética",
+    "Aplicación de marca",
       ],
     },
     contenido: {
@@ -254,6 +258,8 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       items: [
         "Interior design",
         "Furniture sourcing",
+    "Signage",
+    "Brand application",
       ],
     },
     contenido: {
@@ -412,6 +418,12 @@ const processCards: ProcessCardData[] = [
       {
         keys: ["busqueda-mobiliario"],
       },
+    {
+      keys: ["senaletica"],
+    },
+    {
+      keys: ["aplicacion-marca"],
+    },
     ],
     column: 2,
     row: 4,

@@ -154,6 +154,14 @@ export const PROCESS_GROUPS: ProcessGroupDefinition[] = [
             key: "busqueda-mobiliario",
             title: "Búsqueda de mobiliario",
           },
+          {
+            key: "senaletica",
+            title: "Señalética",
+          },
+          {
+            key: "aplicacion-marca",
+            title: "Aplicación de marca",
+          },
         ],
       },
     ],
@@ -245,10 +253,7 @@ export const PROCESS_GROUPS: ProcessGroupDefinition[] = [
 ];
 
 export const PROCESS_ITEMS = PROCESS_GROUPS.flatMap((group) =>
-  group.items.flatMap((item) => [
-    item,
-    ...(item.children ?? []),
-  ]),
+  group.items.flatMap((item) => [item, ...(item.children ?? [])]),
 ).map((item, index) => ({
   key: item.key,
   title: item.title,
