@@ -47,6 +47,7 @@ type ProcessKey =
   | "web"
   | "tienda-online"
   | "desarrollo"
+  | "modulo-reservas"
   | "universo-marca"
   | "revision-cierre-fase"
   | "activacion-gestion"
@@ -173,6 +174,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
         "Web",
         "Tienda online",
         "Desarrollo",
+        "Módulo de reservas",
       ],
     },
     universoMarca: {
@@ -280,6 +282,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
         "Website",
         "Online store",
         "Development",
+        "Booking module",
       ],
     },
     universoMarca: {
@@ -459,6 +462,9 @@ const processCards: ProcessCardData[] = [
       },
       {
         keys: ["desarrollo"],
+      },
+      {
+        keys: ["modulo-reservas"],
       },
     ],
     column: 4,

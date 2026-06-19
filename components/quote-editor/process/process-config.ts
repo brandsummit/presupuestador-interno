@@ -208,6 +208,10 @@ export const PROCESS_GROUPS: ProcessGroupDefinition[] = [
             key: "desarrollo",
             title: "Desarrollo",
           },
+          {
+            key: "modulo-reservas",
+            title: "Módulo de reservas",
+          },
         ],
       },
     ],
