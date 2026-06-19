@@ -129,7 +129,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       description:
         "Definimos el sistema gráfico que permite reconocer, diferenciar y expresar la marca.",
       items: [
-        "Logo principal",
+        "Logo y universo gráfico",
         "Universo gráfico",
         "Dirección de arte",
         "Aplicación corporativa",
@@ -178,7 +178,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       ],
     },
     universoMarca: {
-      title: "Universo de marca",
+      title: "Aplicación a redes",
       description:
         "Tenemos la marca definida a nivel estratégico, verbal y visual, lista para activarse.",
       items: ["Revisión y cierre de fase"],
@@ -237,8 +237,8 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       description:
         "We define the visual system that makes the brand recognisable, distinctive and expressive.",
       items: [
-        "Primary logo",
-        "Visual universe",
+        "logo and graphic universe",
+        "Social media applications",
         "Art direction",
         "Corporate applications",
       ],

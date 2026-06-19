@@ -98,11 +98,11 @@ export const PROCESS_GROUPS: ProcessGroupDefinition[] = [
         children: [
           {
             key: "logo-principal",
-            title: "Logo principal",
+            title: "Logo y universo gráfico",
           },
           {
             key: "universo-grafico",
-            title: "Universo gráfico",
+            title: "Aplicación a redes",
           },
           {
             key: "direccion-arte",
