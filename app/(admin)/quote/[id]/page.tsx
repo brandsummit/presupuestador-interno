@@ -1,5 +1,6 @@
-import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+
+import { supabase } from "@/lib/supabase";
 
 import QuoteEditorHeader from "@/components/quote-editor/QuoteEditorHeader";
 import QuoteInfoGrid from "@/components/quote-editor/QuoteInfoGrid";
@@ -9,8 +10,8 @@ import ProcessSection from "@/components/quote-editor/process/ProcessSection";
 import CostsSection from "@/components/quote-editor/costs/CostsSection";
 import TimelineSection from "@/components/quote-editor/timeline/TimelineSection";
 import SummarySection from "@/components/quote-editor/SummarySection";
-import QuoteToolbar from "@/components/quote-editor/QuoteToolbar";
 import ActionsSection from "@/components/quote-editor/ActionsSection";
+import QuoteToolbar from "@/components/quote-editor/QuoteToolbar";
 
 import { Quote } from "@/components/quote-editor/types";
 import { getCostTotal } from "@/components/quote-editor/utils";
@@ -27,18 +28,20 @@ export default async function QuotePage({ params }: QuotePageProps) {
   const { data: quote, error } = await supabase
     .from("quotes")
     .select(`
+      *,
+      clients (*),
+
+      quote_sections (
         *,
-        clients (*),
+        quote_items (*)
+      ),
 
-        quote_sections (
-            *,
-            quote_items (*)
-        ),
+      timeline_areas (
+        *,
+        timeline_items (*)
+      ),
 
-        timeline_areas (
-            *,
-            timeline_items (*)
-        )
+      summary_payment_items (*)
     `)
     .eq("id", id)
     .single();
@@ -63,6 +66,20 @@ export default async function QuotePage({ params }: QuotePageProps) {
       ),
     }));
 
+  typedQuote.timeline_areas = typedQuote.timeline_areas
+    ?.sort((a, b) => (a.position || 0) - (b.position || 0))
+    .map((area) => ({
+      ...area,
+      timeline_items: area.timeline_items?.sort(
+        (a, b) => (a.position || 0) - (b.position || 0),
+      ),
+    }));
+
+  typedQuote.summary_payment_items =
+    typedQuote.summary_payment_items?.sort(
+      (a, b) => (a.position || 0) - (b.position || 0),
+    ) || [];
+
   const costTotal = getCostTotal(typedQuote);
 
   return (
@@ -79,7 +96,9 @@ export default async function QuotePage({ params }: QuotePageProps) {
         quote={typedQuote}
         onToggle={async (value) => {
           "use server";
+
           const { updateQuoteSectionVisibility } = await import("./actions");
+
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_objective",
@@ -93,7 +112,9 @@ export default async function QuotePage({ params }: QuotePageProps) {
         enabled={typedQuote.show_phases ?? true}
         onToggle={async (value) => {
           "use server";
+
           const { updateQuoteSectionVisibility } = await import("./actions");
+
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_phases",
@@ -107,7 +128,9 @@ export default async function QuotePage({ params }: QuotePageProps) {
         enabled={typedQuote.show_process ?? true}
         onToggle={async (value: boolean) => {
           "use server";
+
           const { updateQuoteSectionVisibility } = await import("./actions");
+
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_process",
@@ -121,7 +144,9 @@ export default async function QuotePage({ params }: QuotePageProps) {
         enabled={typedQuote.show_costs ?? true}
         onToggle={async (value) => {
           "use server";
+
           const { updateQuoteSectionVisibility } = await import("./actions");
+
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_costs",
@@ -148,11 +173,12 @@ export default async function QuotePage({ params }: QuotePageProps) {
 
       <SummarySection
         quote={typedQuote}
-        costTotal={costTotal}
         enabled={typedQuote.show_summary ?? true}
         onToggle={async (value) => {
           "use server";
+
           const { updateQuoteSectionVisibility } = await import("./actions");
+
           await updateQuoteSectionVisibility(
             typedQuote.id,
             "show_summary",
@@ -178,9 +204,9 @@ export default async function QuotePage({ params }: QuotePageProps) {
       />
 
       <QuoteToolbar
-        quoteId={quote.id}
-        token={quote.token}
-        language={quote.language || "es"}
+        quoteId={String(typedQuote.id)}
+        token={typedQuote.token}
+        language={typedQuote.language || "es"}
       />
     </div>
   );

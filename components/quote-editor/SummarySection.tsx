@@ -1,100 +1,270 @@
 "use client";
 
-import { updateQuoteField } from "@/app/(admin)/quote/[id]/actions";
-import Input from "@/components/ui/Input";
-import Label from "@/components/ui/Label";
-import Textarea from "@/components/ui/Textarea";
-import { Quote } from "./types";
+import { useState } from "react";
+import { GripVertical, Plus } from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+import Button from "@/components/ui/Button";
+import CostInput from "@/components/ui/CostInput";
+import ConfirmIconDeleteButton from "@/components/ui/ConfirmIconDeleteButton";
+
+import { Quote, SummaryPaymentItem } from "./types";
 import SectionHeader from "./SectionHeader";
+
+import {
+  createSummaryPaymentItem,
+  deleteSummaryPaymentItem,
+  reorderSummaryPaymentItems,
+  updateSummaryPaymentItem,
+} from "./summary/actions";
 
 type Props = {
   quote: Quote;
-  costTotal: number;
   enabled: boolean;
   onToggle: (value: boolean) => void;
 };
 
-function formatDateInput(date: string | null) {
-  if (!date) return "";
-  return new Date(date).toISOString().split("T")[0];
+type PaymentItemRowProps = {
+  quoteId: number;
+  item: SummaryPaymentItem;
+  enabled: boolean;
+  percentage: number;
+  onDeleted: () => void;
+};
+
+function getPaymentPercentages(itemCount: number) {
+  if (itemCount <= 0) return [];
+
+  const remainingPercentage = 50;
+  const basePercentage = Math.floor(remainingPercentage / itemCount);
+  const remainder = remainingPercentage - basePercentage * itemCount;
+
+  return Array.from({ length: itemCount }, (_, index) =>
+    index < remainder ? basePercentage + 1 : basePercentage,
+  );
+}
+
+function PaymentItemRow({
+  quoteId,
+  item,
+  enabled,
+  percentage,
+  onDeleted,
+}: PaymentItemRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: item.id,
+    disabled: !enabled,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  async function handleDelete() {
+    await deleteSummaryPaymentItem(quoteId, item.id);
+    onDeleted();
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`
+        grid gap-2 rounded-lg bg-background p-2
+        md:grid-cols-[40px_100px_1fr_auto]
+        ${isDragging ? "opacity-60" : ""}
+      `}
+    >
+      <button
+        type="button"
+        disabled={!enabled}
+        className="flex cursor-grab items-center justify-center text-text-muted disabled:cursor-not-allowed"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical size={16} />
+      </button>
+
+      <div className="flex min-h-10 items-center justify-center rounded-md bg-background-dark px-3 font-display text-xl">
+        {percentage}%
+      </div>
+
+      <CostInput
+        defaultValue={item.label || ""}
+        placeholder="Ej. Al validar branding"
+        disabled={!enabled}
+        onBlur={(event) =>
+          updateSummaryPaymentItem(
+            quoteId,
+            item.id,
+            event.target.value,
+          )
+        }
+      />
+
+      <ConfirmIconDeleteButton
+        disabled={!enabled}
+        onConfirm={handleDelete}
+      />
+    </div>
+  );
 }
 
 export default function SummarySection({
   quote,
-  costTotal,
   enabled,
   onToggle,
 }: Props) {
+  const [items, setItems] = useState<SummaryPaymentItem[]>(
+    quote.summary_payment_items || [],
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
+
+  const percentages = getPaymentPercentages(items.length);
+  const hasItems = items.length > 0;
+
+  async function handleCreateItem() {
+    const newItem = await createSummaryPaymentItem(quote.id);
+
+    setItems((currentItems) => [...currentItems, newItem]);
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = items.findIndex((item) => item.id === active.id);
+    const newIndex = items.findIndex((item) => item.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newItems = arrayMove(items, oldIndex, newIndex);
+
+    setItems(newItems);
+
+    await reorderSummaryPaymentItems(
+      quote.id,
+      newItems.map((item) => item.id),
+    );
+  }
+
   return (
     <section className="rounded-lg bg-background-light p-6">
-      <SectionHeader title="Resumen" enabled={enabled} onToggle={onToggle} />
+      <SectionHeader
+        title="Resumen"
+        enabled={enabled}
+        onToggle={onToggle}
+      />
 
-      <div className={!enabled ? "opacity-50 cursor-not-allowed" : ""}>
+      <div
+        className={!enabled ? "cursor-not-allowed opacity-50" : ""}
+      >
         <div className={!enabled ? "pointer-events-none" : ""}>
-          <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-3">
-              <div>
-                <Label>Start</Label>
-                <Input
-                  type="date"
-                  defaultValue={formatDateInput(quote.start_at)}
-                  disabled={!enabled}
-                  onBlur={(event) =>
-                    updateQuoteField(
-                      quote.id,
-                      "start_at",
-                      event.target.value || null,
-                    )
-                  }
-                />
+          <div className="mt-5 rounded-2xl bg-background p-2">
+            <div className="grid gap-2 rounded-lg bg-background-dark p-2 md:grid-cols-[140px_1fr]">
+              <div className="flex min-h-12 items-center justify-center rounded-md bg-background px-4 font-display text-2xl">
+                50%
               </div>
 
-              <div>
-                <Label>Duration</Label>
-                <Input
-                  defaultValue={quote.duration || ""}
-                  placeholder="From 8 to 10 weeks"
-                  disabled={!enabled}
-                  onBlur={(event) =>
-                    updateQuoteField(quote.id, "duration", event.target.value)
-                  }
-                />
-              </div>
-
-              <div>
-                <Label>Total</Label>
-                <Input value={`${costTotal} €`} disabled />
+              <div className="flex min-h-12 items-center rounded-md bg-background px-4 text-sm">
+                Para arrancar el proyecto
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <Label>Payment Terms</Label>
-                <Textarea
-                  defaultValue={quote.payment_terms || ""}
-                  placeholder="50% in advance..."
-                  disabled={!enabled}
-                  onBlur={(event) =>
-                    updateQuoteField(
-                      quote.id,
-                      "payment_terms",
-                      event.target.value,
-                    )
-                  }
-                />
-              </div>
+            <div className="mt-2 rounded-xl bg-background-dark p-2">
+              {hasItems ? (
+                <>
+                  <DndContext
+                    id={`summary-payment-items-${quote.id}`}
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={items.map((item) => item.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-2">
+                        {items.map((item, index) => (
+                          <PaymentItemRow
+                            key={item.id}
+                            quoteId={quote.id}
+                            item={item}
+                            enabled={enabled}
+                            percentage={percentages[index]}
+                            onDeleted={() =>
+                              setItems((currentItems) =>
+                                currentItems.filter(
+                                  (currentItem) =>
+                                    currentItem.id !== item.id,
+                                ),
+                              )
+                            }
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
 
-              <div>
-                <Label>Next Steps</Label>
-                <Textarea
-                  defaultValue={quote.next_steps || ""}
-                  placeholder="Acceptance and/or negotiation of the proposal..."
-                  disabled={!enabled}
-                  onBlur={(event) =>
-                    updateQuoteField(quote.id, "next_steps", event.target.value)
-                  }
-                />
-              </div>
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      type="button"
+                      disabled={!enabled}
+                      onClick={handleCreateItem}
+                    >
+                      <Plus size={14} />
+                      Añadir pago
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-lg border border-dashed border-input-border p-6">
+                  <div className="flex min-h-24 items-center justify-center gap-8">
+                    <p className="text-base text-text-muted">
+                      No hay pagos adicionales.
+                    </p>
+
+                    <Button
+                      type="button"
+                      disabled={!enabled}
+                      onClick={handleCreateItem}
+                    >
+                      <Plus size={14} />
+                      Añadir pago
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

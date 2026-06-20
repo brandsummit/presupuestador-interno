@@ -18,20 +18,6 @@ export type QuoteItem = {
   price?: number | null;
 };
 
-export type TimelineItem = {
-  id: number;
-  position?: number | null;
-
-  title?: string | null;
-
-  start_week?: number | null;
-  end_week?: number | null;
-
-  type?: string | null;
-
-  visible?: boolean | null;
-};
-
 export type QuoteSection = {
   id: number;
   position?: number | null;
@@ -39,15 +25,22 @@ export type QuoteSection = {
   quote_items?: QuoteItem[];
 };
 
+export type TimelineItem = {
+  id: number;
+  position?: number | null;
+  title?: string | null;
+  start_week?: number | null;
+  end_week?: number | null;
+  type?: string | null;
+  visible?: boolean | null;
+};
+
 export type TimelineArea = {
   id: number;
   position?: number | null;
-
   title?: string | null;
   color?: string | null;
-
   visible?: boolean | null;
-
   timeline_items?: TimelineItem[];
 };
 
@@ -58,6 +51,15 @@ export type QuoteProcessItem = {
   item_key?: string | null;
   parent_key?: string | null;
   enabled?: boolean | null;
+};
+
+export type SummaryPaymentItem = {
+  id: number;
+  quote_id: number;
+  label: string;
+  position: number;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 export type Quote = {
@@ -84,13 +86,15 @@ export type Quote = {
 
   client_id: number | null;
 
-  clients?: {
-    id: number;
-    name: string | null;
-    email?: string | null;
-  } | null;
+  clients?: Client | null;
 
   quote_sections?: QuoteSection[];
+
+  timeline_areas?: TimelineArea[];
+
+  quote_process_items?: QuoteProcessItem[];
+
+  summary_payment_items?: SummaryPaymentItem[];
 
   show_objective?: boolean | null;
   show_phases?: boolean | null;
@@ -99,10 +103,6 @@ export type Quote = {
   show_timeline?: boolean | null;
   show_summary?: boolean | null;
   show_actions?: boolean | null;
-
-  timeline_areas?: TimelineArea[];
-
-  quote_process_items?: QuoteProcessItem[];
 
   language: "es" | "en";
 };

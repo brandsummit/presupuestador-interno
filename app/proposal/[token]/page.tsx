@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+
 import { supabase } from "@/lib/supabase";
 import { Quote } from "@/components/quote-editor/types";
 
@@ -25,16 +26,21 @@ export default async function ProposalPage({
     .select(
       `
       *,
-      clients(*),
-      quote_sections(
+      clients (*),
+
+      quote_sections (
         *,
-        quote_items(*)
+        quote_items (*)
       ),
-      quote_process_items(*),
-      timeline_areas(
+
+      quote_process_items (*),
+
+      timeline_areas (
         *,
-        timeline_items(*)
-      )
+        timeline_items (*)
+      ),
+
+      summary_payment_items (*)
       `,
     )
     .eq("token", token)
@@ -44,9 +50,34 @@ export default async function ProposalPage({
     notFound();
   }
 
+  const typedQuote = quote as Quote;
+
+  typedQuote.quote_sections = typedQuote.quote_sections
+    ?.sort((a, b) => (a.position || 0) - (b.position || 0))
+    .map((section) => ({
+      ...section,
+      quote_items: section.quote_items?.sort(
+        (a, b) => (a.position || 0) - (b.position || 0),
+      ),
+    }));
+
+  typedQuote.timeline_areas = typedQuote.timeline_areas
+    ?.sort((a, b) => (a.position || 0) - (b.position || 0))
+    .map((area) => ({
+      ...area,
+      timeline_items: area.timeline_items?.sort(
+        (a, b) => (a.position || 0) - (b.position || 0),
+      ),
+    }));
+
+  typedQuote.summary_payment_items =
+    typedQuote.summary_payment_items?.sort(
+      (a, b) => (a.position || 0) - (b.position || 0),
+    ) || [];
+
   return (
     <ProposalLayout
-      quote={quote as Quote}
+      quote={typedQuote}
       viewMode={view === "simplified" ? "simplified" : "full"}
     />
   );

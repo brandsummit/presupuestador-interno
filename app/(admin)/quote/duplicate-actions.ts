@@ -171,6 +171,38 @@ async function duplicateTimeline(
   }
 }
 
+async function duplicateSummaryPaymentItems(
+  originalQuoteId: string,
+  newQuoteId: string,
+) {
+  const { data: paymentItems, error: paymentItemsError } = await supabase
+    .from("summary_payment_items")
+    .select("*")
+    .eq("quote_id", originalQuoteId)
+    .order("position", { ascending: true });
+
+  if (paymentItemsError) {
+    throw new Error(paymentItemsError.message);
+  }
+
+  if (!paymentItems?.length) {
+    return;
+  }
+
+  const paymentItemsToInsert = paymentItems.map((paymentItem) => ({
+    ...cleanRecord(paymentItem),
+    quote_id: newQuoteId,
+  }));
+
+  const { error: paymentItemsInsertError } = await supabase
+    .from("summary_payment_items")
+    .insert(paymentItemsToInsert);
+
+  if (paymentItemsInsertError) {
+    throw new Error(paymentItemsInsertError.message);
+  }
+}
+
 async function duplicateQuoteBase(
   quoteId: string,
   mode: "clone" | "rectify",
@@ -247,6 +279,7 @@ async function duplicateQuoteBase(
 
   await duplicateQuoteSections(quoteId, newQuote.id);
   await duplicateTimeline(quoteId, newQuote.id);
+  await duplicateSummaryPaymentItems(quoteId, newQuote.id);
 
   redirect(`/quote/${newQuote.id}`);
 }
