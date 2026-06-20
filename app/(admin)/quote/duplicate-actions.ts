@@ -1,9 +1,10 @@
 "use server";
 
-import { generateToken } from "@/lib/generate-token";
 import { redirect } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+
+import { generateToken } from "@/lib/generate-token";
+import { supabase } from "@/lib/supabase";
 
 type DbRecord = Record<string, unknown>;
 
@@ -12,6 +13,7 @@ function cleanRecord(record: DbRecord) {
 
   delete copy.id;
   delete copy.created_at;
+  delete copy.updated_at;
 
   return copy;
 }
@@ -32,7 +34,9 @@ async function getNextNumber() {
 
   const { error: updateError } = await supabase
     .from("quote_counters")
-    .update({ last_number: nextNumber })
+    .update({
+      last_number: nextNumber,
+    })
     .eq("id", "main");
 
   if (updateError) {
@@ -42,7 +46,135 @@ async function getNextNumber() {
   return nextNumber;
 }
 
-async function duplicateQuoteBase(quoteId: string, mode: "clone" | "rectify") {
+async function duplicateQuoteSections(
+  originalQuoteId: string,
+  newQuoteId: string,
+) {
+  const { data: sections, error: sectionsError } = await supabase
+    .from("quote_sections")
+    .select("*")
+    .eq("quote_id", originalQuoteId)
+    .order("position", { ascending: true });
+
+  if (sectionsError) {
+    throw new Error(sectionsError.message);
+  }
+
+  for (const section of sections || []) {
+    const oldSectionId = section.id;
+
+    const { data: newSection, error: newSectionError } = await supabase
+      .from("quote_sections")
+      .insert({
+        ...cleanRecord(section),
+        quote_id: newQuoteId,
+      })
+      .select("id")
+      .single();
+
+    if (newSectionError || !newSection) {
+      throw new Error(
+        newSectionError?.message || "Section could not be copied",
+      );
+    }
+
+    const { data: items, error: itemsError } = await supabase
+      .from("quote_items")
+      .select("*")
+      .eq("section_id", oldSectionId)
+      .order("position", { ascending: true });
+
+    if (itemsError) {
+      throw new Error(itemsError.message);
+    }
+
+    if (!items?.length) {
+      continue;
+    }
+
+    const itemsToInsert = items.map((item) => ({
+      ...cleanRecord(item),
+      section_id: newSection.id,
+    }));
+
+    const { error: itemsInsertError } = await supabase
+      .from("quote_items")
+      .insert(itemsToInsert);
+
+    if (itemsInsertError) {
+      throw new Error(itemsInsertError.message);
+    }
+  }
+}
+
+async function duplicateTimeline(
+  originalQuoteId: string,
+  newQuoteId: string,
+) {
+  const { data: timelineAreas, error: timelineAreasError } = await supabase
+    .from("timeline_areas")
+    .select("*")
+    .eq("quote_id", originalQuoteId)
+    .order("position", { ascending: true });
+
+  if (timelineAreasError) {
+    throw new Error(timelineAreasError.message);
+  }
+
+  for (const timelineArea of timelineAreas || []) {
+    const oldTimelineAreaId = timelineArea.id;
+
+    const { data: newTimelineArea, error: newTimelineAreaError } =
+      await supabase
+        .from("timeline_areas")
+        .insert({
+          ...cleanRecord(timelineArea),
+          quote_id: newQuoteId,
+        })
+        .select("id")
+        .single();
+
+    if (newTimelineAreaError || !newTimelineArea) {
+      throw new Error(
+        newTimelineAreaError?.message ||
+          "Timeline area could not be copied",
+      );
+    }
+
+    const { data: timelineItems, error: timelineItemsError } =
+      await supabase
+        .from("timeline_items")
+        .select("*")
+        .eq("area_id", oldTimelineAreaId)
+        .order("position", { ascending: true });
+
+    if (timelineItemsError) {
+      throw new Error(timelineItemsError.message);
+    }
+
+    if (!timelineItems?.length) {
+      continue;
+    }
+
+    const timelineItemsToInsert = timelineItems.map((timelineItem) => ({
+      ...cleanRecord(timelineItem),
+      area_id: newTimelineArea.id,
+    }));
+
+    const { error: timelineItemsInsertError } = await supabase
+      .from("timeline_items")
+      .insert(timelineItemsToInsert);
+
+    if (timelineItemsInsertError) {
+      throw new Error(timelineItemsInsertError.message);
+    }
+  }
+}
+
+async function duplicateQuoteBase(
+  quoteId: string,
+  mode: "clone" | "rectify",
+) {
   const { data: originalQuote, error: quoteError } = await supabase
     .from("quotes")
     .select("*")
@@ -58,6 +190,7 @@ async function duplicateQuoteBase(quoteId: string, mode: "clone" | "rectify") {
 
   if (mode === "clone") {
     const nextNumber = await getNextNumber();
+
     number = String(nextNumber);
     sequenceNumber = nextNumber;
   }
@@ -72,12 +205,17 @@ async function duplicateQuoteBase(quoteId: string, mode: "clone" | "rectify") {
       throw new Error(relatedError.message);
     }
 
-    const existing = relatedQuotes?.map((q) => q.number) || [];
+    const existingNumbers =
+      relatedQuotes?.map((quote) => quote.number) || [];
+
     const letters = "BCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     const nextLetter = letters
       .split("")
-      .find((letter) => !existing.includes(`${sequenceNumber}${letter}`));
+      .find(
+        (letter) =>
+          !existingNumbers.includes(`${sequenceNumber}${letter}`),
+      );
 
     if (!nextLetter) {
       throw new Error("Too many rectifications");
@@ -92,7 +230,8 @@ async function duplicateQuoteBase(quoteId: string, mode: "clone" | "rectify") {
       ...cleanRecord(originalQuote),
       number,
       sequence_number: sequenceNumber,
-      parent_quote_id: originalQuote.parent_quote_id || originalQuote.id,
+      parent_quote_id:
+        originalQuote.parent_quote_id || originalQuote.id,
       status: "draft",
       sent_at: null,
       token: generateToken(),
@@ -101,60 +240,13 @@ async function duplicateQuoteBase(quoteId: string, mode: "clone" | "rectify") {
     .single();
 
   if (newQuoteError || !newQuote) {
-    throw new Error(newQuoteError?.message || "Quote could not be duplicated");
+    throw new Error(
+      newQuoteError?.message || "Quote could not be duplicated",
+    );
   }
 
-  const { data: sections, error: sectionsError } = await supabase
-    .from("quote_sections")
-    .select("*")
-    .eq("quote_id", quoteId)
-    .order("position", { ascending: true });
-
-  if (sectionsError) {
-    throw new Error(sectionsError.message);
-  }
-
-  for (const section of sections || []) {
-    const oldSectionId = section.id;
-
-    const { data: newSection, error: newSectionError } = await supabase
-      .from("quote_sections")
-      .insert({
-        ...cleanRecord(section),
-        quote_id: newQuote.id,
-      })
-      .select("id")
-      .single();
-
-    if (newSectionError || !newSection) {
-      throw new Error(newSectionError?.message || "Section could not be copied");
-    }
-
-    const { data: items, error: itemsError } = await supabase
-      .from("quote_items")
-      .select("*")
-      .eq("section_id", oldSectionId)
-      .order("position", { ascending: true });
-
-    if (itemsError) {
-      throw new Error(itemsError.message);
-    }
-
-    if (items?.length) {
-      const itemsToInsert = items.map((item) => ({
-        ...cleanRecord(item),
-        section_id: newSection.id,
-      }));
-
-      const { error: itemsInsertError } = await supabase
-        .from("quote_items")
-        .insert(itemsToInsert);
-
-      if (itemsInsertError) {
-        throw new Error(itemsInsertError.message);
-      }
-    }
-  }
+  await duplicateQuoteSections(quoteId, newQuote.id);
+  await duplicateTimeline(quoteId, newQuote.id);
 
   redirect(`/quote/${newQuote.id}`);
 }
@@ -168,7 +260,10 @@ export async function rectifyQuote(quoteId: string) {
 }
 
 export async function deleteQuote(quoteId: string) {
-  const { error } = await supabase.from("quotes").delete().eq("id", quoteId);
+  const { error } = await supabase
+    .from("quotes")
+    .delete()
+    .eq("id", quoteId);
 
   if (error) {
     throw new Error(error.message);
@@ -187,7 +282,9 @@ export async function updateQuoteLanguage(
 
   const { error } = await supabase
     .from("quotes")
-    .update({ language })
+    .update({
+      language,
+    })
     .eq("id", quoteId);
 
   if (error) {
