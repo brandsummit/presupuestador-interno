@@ -178,7 +178,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
       ],
     },
     universoMarca: {
-      title: "Aplicación a redes",
+      title: "Universo de marca",
       description:
         "Tenemos la marca definida a nivel estratégico, verbal y visual, lista para activarse.",
       items: ["Revisión y cierre de fase"],
