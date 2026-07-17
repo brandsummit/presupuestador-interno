@@ -130,7 +130,7 @@ const processCopies: Record<"es" | "en", ProcessCopyMap> = {
         "Definimos el sistema gráfico que permite reconocer, diferenciar y expresar la marca.",
       items: [
         "Logo y universo gráfico",
-        "Universo gráfico",
+        "Aplicación a redes",
         "Dirección de arte",
         "Aplicación corporativa",
       ],
