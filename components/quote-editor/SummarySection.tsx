@@ -29,6 +29,7 @@ import {
   createSummaryPaymentItem,
   deleteSummaryPaymentItem,
   reorderSummaryPaymentItems,
+  updateQuoteStartAt,
   updateSummaryPaymentItem,
 } from "./summary/actions";
 
@@ -50,12 +51,23 @@ function getPaymentPercentages(itemCount: number) {
   if (itemCount <= 0) return [];
 
   const remainingPercentage = 50;
-  const basePercentage = Math.floor(remainingPercentage / itemCount);
-  const remainder = remainingPercentage - basePercentage * itemCount;
+  const basePercentage = Math.floor(
+    remainingPercentage / itemCount,
+  );
+  const remainder =
+    remainingPercentage - basePercentage * itemCount;
 
   return Array.from({ length: itemCount }, (_, index) =>
-    index < remainder ? basePercentage + 1 : basePercentage,
+    index < remainder
+      ? basePercentage + 1
+      : basePercentage,
   );
+}
+
+function getDateInputValue(value: string | null) {
+  if (!value) return "";
+
+  return value.slice(0, 10);
 }
 
 function PaymentItemRow({
@@ -141,6 +153,10 @@ export default function SummarySection({
     quote.summary_payment_items || [],
   );
 
+  const [startAt, setStartAt] = useState(
+    getDateInputValue(quote.start_at),
+  );
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -152,10 +168,26 @@ export default function SummarySection({
   const percentages = getPaymentPercentages(items.length);
   const hasItems = items.length > 0;
 
+  async function handleStartAtChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const value = event.target.value;
+
+    setStartAt(value);
+
+    await updateQuoteStartAt(
+      quote.id,
+      value || null,
+    );
+  }
+
   async function handleCreateItem() {
     const newItem = await createSummaryPaymentItem(quote.id);
 
-    setItems((currentItems) => [...currentItems, newItem]);
+    setItems((currentItems) => [
+      ...currentItems,
+      newItem,
+    ]);
   }
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -163,12 +195,21 @@ export default function SummarySection({
 
     if (!over || active.id === over.id) return;
 
-    const oldIndex = items.findIndex((item) => item.id === active.id);
-    const newIndex = items.findIndex((item) => item.id === over.id);
+    const oldIndex = items.findIndex(
+      (item) => item.id === active.id,
+    );
+
+    const newIndex = items.findIndex(
+      (item) => item.id === over.id,
+    );
 
     if (oldIndex === -1 || newIndex === -1) return;
 
-    const newItems = arrayMove(items, oldIndex, newIndex);
+    const newItems = arrayMove(
+      items,
+      oldIndex,
+      newIndex,
+    );
 
     setItems(newItems);
 
@@ -187,10 +228,34 @@ export default function SummarySection({
       />
 
       <div
-        className={!enabled ? "cursor-not-allowed opacity-50" : ""}
+        className={
+          !enabled
+            ? "cursor-not-allowed opacity-50"
+            : ""
+        }
       >
-        <div className={!enabled ? "pointer-events-none" : ""}>
+        <div
+          className={
+            !enabled
+              ? "pointer-events-none"
+              : ""
+          }
+        >
           <div className="mt-5 rounded-2xl bg-background p-2">
+            <div className="mb-2 grid gap-2 rounded-lg bg-background-dark p-2 md:grid-cols-[240px_1fr]">
+              <div className="flex min-h-12 items-center rounded-md bg-background px-4 font-display text-xl">
+                Día de arranque
+              </div>
+
+              <input
+                type="date"
+                value={startAt}
+                disabled={!enabled}
+                onChange={handleStartAtChange}
+                className="min-h-12 w-full rounded-md border border-input-border bg-background px-4 text-sm outline-none disabled:cursor-not-allowed"
+              />
+            </div>
+
             <div className="grid gap-2 rounded-lg bg-background-dark p-2 md:grid-cols-[140px_1fr]">
               <div className="flex min-h-12 items-center justify-center rounded-md bg-background px-4 font-display text-2xl">
                 50%
@@ -211,27 +276,41 @@ export default function SummarySection({
                     onDragEnd={handleDragEnd}
                   >
                     <SortableContext
-                      items={items.map((item) => item.id)}
-                      strategy={verticalListSortingStrategy}
+                      items={items.map(
+                        (item) => item.id,
+                      )}
+                      strategy={
+                        verticalListSortingStrategy
+                      }
                     >
                       <div className="space-y-2">
-                        {items.map((item, index) => (
-                          <PaymentItemRow
-                            key={item.id}
-                            quoteId={quote.id}
-                            item={item}
-                            enabled={enabled}
-                            percentage={percentages[index]}
-                            onDeleted={() =>
-                              setItems((currentItems) =>
-                                currentItems.filter(
-                                  (currentItem) =>
-                                    currentItem.id !== item.id,
-                                ),
-                              )
-                            }
-                          />
-                        ))}
+                        {items.map(
+                          (item, index) => (
+                            <PaymentItemRow
+                              key={item.id}
+                              quoteId={quote.id}
+                              item={item}
+                              enabled={enabled}
+                              percentage={
+                                percentages[index]
+                              }
+                              onDeleted={() =>
+                                setItems(
+                                  (
+                                    currentItems,
+                                  ) =>
+                                    currentItems.filter(
+                                      (
+                                        currentItem,
+                                      ) =>
+                                        currentItem.id !==
+                                        item.id,
+                                    ),
+                                )
+                              }
+                            />
+                          ),
+                        )}
                       </div>
                     </SortableContext>
                   </DndContext>

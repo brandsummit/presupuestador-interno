@@ -259,7 +259,7 @@ export default function ProposalSummary({ quote }: Props) {
                   (item: SummaryPaymentItem, index: number) => (
                     <div
                       key={item.id}
-                      className="flex h-full min-h-[82px] items-center justify-between gap-6 rounded-xl border border-prop-text/60 px-6"
+                      className="flex h-full min-h-20.5 items-center justify-between gap-6 rounded-xl border border-prop-text/60 px-6"
                     >
                       <span className="font-display text-4xl">
                         {paymentPercentages[index]}%
@@ -272,7 +272,7 @@ export default function ProposalSummary({ quote }: Props) {
                   ),
                 )
               ) : (
-                <div className="flex min-h-[82px] items-center justify-center rounded-xl border border-dashed border-prop-text/30 px-6">
+                <div className="flex min-h-20.5 items-center justify-center rounded-xl border border-dashed border-prop-text/30 px-6">
                   <span className="text-center text-sm text-prop-text/50">
                     {language === "en"
                       ? "No additional payment milestones"
@@ -295,7 +295,7 @@ export default function ProposalSummary({ quote }: Props) {
         </article>
 
         <article className="flex flex-col justify-between gap-8 overflow-hidden rounded-[36px] bg-prop-text text-prop-background xl:rounded-l-xl xl:rounded-r-[36px]">
-          <div className="flex min-h-[320px] flex-1 items-center overflow-hidden py-10">
+          <div className="flex min-h-80 flex-1 items-center overflow-hidden py-10">
             {startDate ? (
               <div className="flex w-full items-center justify-center gap-3">
                 <div className="w-[40%] shrink-0">

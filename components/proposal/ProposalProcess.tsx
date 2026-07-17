@@ -900,7 +900,7 @@ export default function ProposalProcess({
       </div>
 
       <div
-        className="relative mx-auto mt-24 hidden w-full max-w-[1800px] xl:block"
+        className="relative mx-auto mt-24 hidden w-full max-w-450 xl:block"
         style={{
           aspectRatio: "1800 / 2460",
         }}

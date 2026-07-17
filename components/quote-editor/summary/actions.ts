@@ -4,6 +4,24 @@ import { revalidatePath } from "next/cache";
 
 import { supabase } from "@/lib/supabase";
 
+export async function updateQuoteStartAt(
+  quoteId: number,
+  startAt: string | null,
+) {
+  const { error } = await supabase
+    .from("quotes")
+    .update({
+      start_at: startAt || null,
+    })
+    .eq("id", quoteId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/quote/${quoteId}`);
+}
+
 export async function createSummaryPaymentItem(quoteId: number) {
   const { data: lastItem, error: lastItemError } = await supabase
     .from("summary_payment_items")
